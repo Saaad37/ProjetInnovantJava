@@ -16,8 +16,6 @@ public class WindowPanel extends JPanel implements Runnable{
     JLabel prcntO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
 
-    int[] values;
-
     int fps = 60;
     long timer;
     double deltaT;
