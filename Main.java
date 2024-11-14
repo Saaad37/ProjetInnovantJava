@@ -9,6 +9,7 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setTitle("Surveillance System");
         window.setLocationRelativeTo(null);
+        window.setResizable(false);
         window.add(wp);
         window.setVisible(true);
 

@@ -6,6 +6,9 @@ public class WindowPanel extends JPanel implements Runnable{
 
     Thread windowThread;
     Random rand = new Random();
+    Font font = new Font("Helvetica", Font.PLAIN,20);
+    JLabel[] texts;
+
     int pressureVal;
     int prcntN2Val;
     int prcntO2Val;
@@ -16,6 +19,8 @@ public class WindowPanel extends JPanel implements Runnable{
     JLabel prcntO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
 
+    JLabel txt = new JLabel();
+
     int fps = 60;
     long timer;
     double deltaT;
@@ -24,18 +29,23 @@ public class WindowPanel extends JPanel implements Runnable{
 
     public WindowPanel(){
 
-        pressureTxt.setVerticalTextPosition(JLabel.CENTER);
-        prcntO2Txt.setVerticalTextPosition(JLabel.CENTER);
-        prcntN2Txt.setVerticalTextPosition(JLabel.CENTER);
-        depthTxt.setVerticalTextPosition(JLabel.CENTER);
+        pressureTxt.setFont(font);
+        prcntN2Txt.setFont(font);
+        prcntO2Txt.setFont(font);
+        depthTxt.setFont(font);
 
+        pressureTxt.setBounds(new Rectangle(10, 100, 400, 20));
+        prcntN2Txt.setBounds(new Rectangle(10, 140, 400, 50));
+        prcntO2Txt.setBounds(new Rectangle(10, 200, 400, 50));
+        depthTxt.setBounds(new Rectangle(10, 250, 400, 50));
 
+        this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 600));
+
         this.add(pressureTxt);
         this.add(prcntN2Txt);
         this.add(prcntO2Txt);
         this.add(depthTxt);
-
     }
 
     public void startThread(){
@@ -43,12 +53,11 @@ public class WindowPanel extends JPanel implements Runnable{
         windowThread.start();
     }
 
-    public int[] assignValues(){
+    public void assignValues(){
         pressureVal = rand.nextInt(100);
         prcntN2Val = rand.nextInt(100);
         prcntO2Val = rand.nextInt(100);
         depthVal = rand.nextInt(120);
-        return new int[] {pressureVal, prcntN2Val, prcntO2Val, depthVal};
     }
 
     @Override
@@ -75,21 +84,19 @@ public class WindowPanel extends JPanel implements Runnable{
                 timer++;
             }
             if(timer >= 1000000000){
-                showValuesInWindow();
+                setValues();
                 timer = 0;
             }
 
         }
     }
 
-    public void showValuesInWindow() {
+    public void setValues() {
 
-        pressureTxt.setText("Pressure " + Integer.toString(pressureVal) + " bar");
-        prcntN2Txt.setText("N2 " + Integer.toString(prcntN2Val) + "%");
-        prcntO2Txt.setText("O2 " + Integer.toString(prcntO2Val) + "%");
-        depthTxt.setText("depth " + Integer.toString(depthVal) + "m");
-        JLabel[] texts = new JLabel[] {pressureTxt, prcntN2Txt, prcntO2Txt, depthTxt};
-
+        pressureTxt.setText("<html><body>Pressure :" + pressureVal + " bar<br> </body></html>");
+        prcntN2Txt.setText("<html><body>N2 :" + prcntN2Val + "%<br> </body></html>");
+        prcntO2Txt.setText("<html><body>O2 :" + prcntO2Val + "%<br></body></html>");
+        depthTxt.setText("<html><body>Depth :" + depthVal + "m<br></body></html>");
 
     }
 
