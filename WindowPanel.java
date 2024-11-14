@@ -8,6 +8,7 @@ public class WindowPanel extends JPanel implements Runnable{
     Random rand = new Random();
     Font font = new Font("Helvetica", Font.PLAIN,20);
     JLabel[] texts;
+    Color bgColor = new Color(24, 124, 209);
 
     int pressureVal;
     int prcntN2Val;
@@ -19,7 +20,10 @@ public class WindowPanel extends JPanel implements Runnable{
     JLabel prcntO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
 
-    JLabel txt = new JLabel();
+    String pressureWarning;
+    String N2Warning;
+    String O2Warning;
+    String depthWarning;
 
     int fps = 60;
     long timer;
@@ -34,13 +38,14 @@ public class WindowPanel extends JPanel implements Runnable{
         prcntO2Txt.setFont(font);
         depthTxt.setFont(font);
 
-        pressureTxt.setBounds(new Rectangle(10, 100, 400, 20));
-        prcntN2Txt.setBounds(new Rectangle(10, 140, 400, 50));
-        prcntO2Txt.setBounds(new Rectangle(10, 200, 400, 50));
-        depthTxt.setBounds(new Rectangle(10, 250, 400, 50));
+        pressureTxt.setBounds(new Rectangle(10, 100, 720, 50));
+        prcntN2Txt.setBounds(new Rectangle(10, 150, 720, 50));
+        prcntO2Txt.setBounds(new Rectangle(10, 200, 720, 50));
+        depthTxt.setBounds(new Rectangle(10, 250, 720, 50));
 
         this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 600));
+        this.setBackground(bgColor);
 
         this.add(pressureTxt);
         this.add(prcntN2Txt);
@@ -58,6 +63,41 @@ public class WindowPanel extends JPanel implements Runnable{
         prcntN2Val = rand.nextInt(100);
         prcntO2Val = rand.nextInt(100);
         depthVal = rand.nextInt(120);
+    }
+
+    public void checkValues(){
+        if(pressureVal >= 50){
+            pressureWarning = "RETURN TO THE SURFACE PRESSURE TOO HIGH";
+            pressureTxt.setForeground(Color.RED);
+        }else if(pressureVal < 50){
+            pressureWarning = "Normal pressure, just be careful..";
+            pressureTxt.setForeground(Color.BLACK);
+        }
+        if(prcntN2Val >= 10){
+            N2Warning = "RETURN TO THE SURFACE N2 IN BLOOD IS TOO HIGH";
+            prcntN2Txt.setForeground(Color.RED);
+        }else if(prcntN2Val < 10){
+            N2Warning = "Normal N2 percentages";
+            prcntN2Txt.setForeground(Color.RED);
+        }
+        if(prcntO2Val >= 92){
+            O2Warning = "Normal Saturation.";
+            prcntO2Txt.setForeground(Color.black);
+        }else if(prcntO2Val < 92){
+            O2Warning = "O2 SATURATION IS TOO LOW !";
+            prcntO2Txt.setForeground(Color.RED);
+        }
+        if(depthVal >= 1 && depthVal < 58){
+            depthWarning = "You are using a normal nitrox mixture.";
+            depthTxt.setForeground(new Color(98, 209, 24));
+        }else if(depthVal > 58 && depthVal <= 60){
+            depthWarning = "Be careful you are switching to a trimix gaz mixture";
+            depthTxt.setForeground(Color.gray);
+        }else if(depthVal > 60 && depthVal < 120){
+            depthWarning = "Be careful you are not using a normal gaz mixture";
+            depthTxt.setForeground(Color.RED);
+        }
+
     }
 
     @Override
@@ -79,11 +119,12 @@ public class WindowPanel extends JPanel implements Runnable{
 
             if(deltaT >= 1)
             {
-                assignValues();
                 deltaT--;
                 timer++;
             }
             if(timer >= 1000000000){
+                assignValues();
+                checkValues();
                 setValues();
                 timer = 0;
             }
@@ -93,10 +134,10 @@ public class WindowPanel extends JPanel implements Runnable{
 
     public void setValues() {
 
-        pressureTxt.setText("<html><body>Pressure :" + pressureVal + " bar<br> </body></html>");
-        prcntN2Txt.setText("<html><body>N2 :" + prcntN2Val + "%<br> </body></html>");
-        prcntO2Txt.setText("<html><body>O2 :" + prcntO2Val + "%<br></body></html>");
-        depthTxt.setText("<html><body>Depth :" + depthVal + "m<br></body></html>");
+        pressureTxt.setText("<html><body><p>Pressure :" + pressureVal + " bar        " + pressureWarning + " </p><br> </body></html>");
+        prcntN2Txt.setText("<html><body><p>N2 :" + prcntN2Val + "%            " + N2Warning + "</p><br></body></html>");
+        prcntO2Txt.setText("<html><body><p>O2 :" + prcntO2Val + "% " + O2Warning + "</p><br></body></html>");
+        depthTxt.setText("<html><body><p>Depth :" + depthVal + "m " + depthWarning + "</p><br></body></html>");
 
     }
 
