@@ -9,15 +9,25 @@ public class WindowPanel extends JPanel implements Runnable{
     int prcntO2Val;
     int depthVal;
 
+    /*
+    Inisialisation des variables et la plus importante windowThread qui est de type Thread qui permet d'éxecuter
+    un processus dans une boucle qui tourne tant que windowThread n'est pas null
+
+    Et des listes qui permetent de stocker les valeurs précédente
+    // TODO Faire un graphe qui représente les valeurs stockées
+     */
+
+
     Thread windowThread;
     Random rand = new Random();
     Font font = new Font("Helvetica", Font.PLAIN,20);
-    JLabel[] texts;
-    Color bgColor = new Color(24, 124, 209);
     int[] values = new int[4];
-    int[][] savedValues = new int[7200][4]; // [[], [], [], ...]
+    int[][] savedValues = new int[7200][values.length + 1]; // [[], [], [], ...]
+    /* Création d'une liste de taille 7200 qui va s'actualiser toute les secondes
+    Ce qui fait 7200sec de plongée ce qui est laargement suiffisant qui va stocké une nouvelle liste
+    qui contient les valeurs actueles.
+    */
     int timerIterations;
-
 
 
     JLabel pressureTxt = new JLabel();
@@ -25,6 +35,8 @@ public class WindowPanel extends JPanel implements Runnable{
     JLabel prcntO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
     JLabel savedText = new JLabel();
+
+    // Création des messages d'alertes.
 
     String pressureWarning;
     String N2Warning;
@@ -36,6 +48,11 @@ public class WindowPanel extends JPanel implements Runnable{
     double deltaT;
     long finalTime;
     double interval;
+
+    /*
+    WindowPanel est la constructeur de la class WindowPanel
+    qui initialise les variables plus haut.
+     */
 
     public WindowPanel(){
 
@@ -62,10 +79,14 @@ public class WindowPanel extends JPanel implements Runnable{
         this.add(savedText);
     }
 
+    // Fonction qui fait en sorte que windowThread ne sois pas null tant que la fenêtre n'est pas fermé
+
     public void startThread(){
         windowThread = new Thread(this);
         windowThread.start();
     }
+
+    // Fonction qui actualise les valeurs et les actualisent dans la liste qui les stockes
 
     public void assignValues(){
         pressureVal = rand.nextInt(100);
@@ -79,6 +100,9 @@ public class WindowPanel extends JPanel implements Runnable{
         values[3] = depthVal;
     }   
 
+    /*
+    Fonction qui fait en sorte que si les valeurs sont anormales elle alerte l'utilisateur des dangers
+     */
 
     public void checkValues(){
         if(pressureVal >= 50){
@@ -115,10 +139,13 @@ public class WindowPanel extends JPanel implements Runnable{
 
     }
 
+    // Fonction qui assimile une liste a
+
     public void saveValues(){
         savedValues[timerIterations] = values;
     }
 
+    // Fonction principal qui s'éxecute lors ce qu'on commence le Thread
     @Override
     public void run() {
         interval = 1000000000/fps;
@@ -128,7 +155,7 @@ public class WindowPanel extends JPanel implements Runnable{
         timer = 0;
         
         while(windowThread != null){
-            
+            // Afin d'éviter les erreurs d'IndexOutOfBound
             if(timerIterations < 0) timerIterations = 0;
 
             currentTime = System.nanoTime();
@@ -138,12 +165,13 @@ public class WindowPanel extends JPanel implements Runnable{
             finalTime = currentTime;
 
 
+            // Condition qui vérifie si DeltaT >= 1 pour ajouter 1 ns au timer
             if(deltaT >= 1)
             {
                 deltaT--;
                 timer++;
             }
-            if(timer >= 1000000000){
+            if(timer >= 1000000000){ // Quand le timer atteinds 10^9 ns (1s) ça va éxecuter tout le processus
                 showSavedValues();
                 assignValues();
                 checkValues();
@@ -156,6 +184,11 @@ public class WindowPanel extends JPanel implements Runnable{
         }
     }
 
+    /*
+        Assimiliation du text dans les JLabel déclaré au début de la class.
+        Utilisation du html pour pouvoir faire un saut de ligne ce qui est impossible sans ce dernier
+     */
+
     public void displayValues() {
 
         pressureTxt.setText("<html><body><p>Pressure :" + pressureVal + " bar " + pressureWarning + " </p><br> </body></html>");
@@ -167,6 +200,7 @@ public class WindowPanel extends JPanel implements Runnable{
     }
 
 
+    // Afficher les valeurs de la seconde d'avant.
     public void showSavedValues(){
         if(timerIterations >= 1){
             savedText.setText("Pressure: " + savedValues[timerIterations - 1][0]
