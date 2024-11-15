@@ -175,6 +175,4 @@ public class WindowPanel extends JPanel implements Runnable{
             + "% Depth: " + savedValues[timerIterations - 1][3] + " m");
         }
     }
-
-
 }
