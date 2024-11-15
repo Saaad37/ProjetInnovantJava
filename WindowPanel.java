@@ -4,21 +4,27 @@ import java.util.Random;
 
 public class WindowPanel extends JPanel implements Runnable{
 
-    Thread windowThread;
-    Random rand = new Random();
-    Font font = new Font("Helvetica", Font.PLAIN,20);
-    JLabel[] texts;
-    Color bgColor = new Color(24, 124, 209);
-
     int pressureVal;
     int prcntN2Val;
     int prcntO2Val;
     int depthVal;
 
+    Thread windowThread;
+    Random rand = new Random();
+    Font font = new Font("Helvetica", Font.PLAIN,20);
+    JLabel[] texts;
+    Color bgColor = new Color(24, 124, 209);
+    int[] values = new int[4];
+    int[][] savedValues = new int[7200][4]; // [[], [], [], ...]
+    int timerIterations;
+
+
+
     JLabel pressureTxt = new JLabel();
     JLabel prcntN2Txt = new JLabel();
     JLabel prcntO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
+    JLabel savedText = new JLabel();
 
     String pressureWarning;
     String N2Warning;
@@ -37,20 +43,23 @@ public class WindowPanel extends JPanel implements Runnable{
         prcntN2Txt.setFont(font);
         prcntO2Txt.setFont(font);
         depthTxt.setFont(font);
+        savedText.setFont(font);
 
         pressureTxt.setBounds(new Rectangle(10, 100, 720, 50));
         prcntN2Txt.setBounds(new Rectangle(10, 150, 720, 50));
         prcntO2Txt.setBounds(new Rectangle(10, 200, 720, 50));
         depthTxt.setBounds(new Rectangle(10, 250, 720, 50));
+        savedText.setBounds(new Rectangle(50, 400, 720,50));
 
         this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 600));
-        this.setBackground(bgColor);
+        this.setBackground(Color.WHITE);
 
         this.add(pressureTxt);
         this.add(prcntN2Txt);
         this.add(prcntO2Txt);
         this.add(depthTxt);
+        this.add(savedText);
     }
 
     public void startThread(){
@@ -63,7 +72,13 @@ public class WindowPanel extends JPanel implements Runnable{
         prcntN2Val = rand.nextInt(100);
         prcntO2Val = rand.nextInt(100);
         depthVal = rand.nextInt(120);
-    }
+        
+        values[0] = pressureVal;
+        values[1] = prcntN2Val;
+        values[2] = prcntO2Val;
+        values[3] = depthVal;
+    }   
+
 
     public void checkValues(){
         if(pressureVal >= 50){
@@ -78,7 +93,7 @@ public class WindowPanel extends JPanel implements Runnable{
             prcntN2Txt.setForeground(Color.RED);
         }else if(prcntN2Val < 10){
             N2Warning = "Normal N2 percentages";
-            prcntN2Txt.setForeground(Color.RED);
+            prcntN2Txt.setForeground(Color.black);
         }
         if(prcntO2Val >= 92){
             O2Warning = "Normal Saturation.";
@@ -100,15 +115,21 @@ public class WindowPanel extends JPanel implements Runnable{
 
     }
 
+    public void saveValues(){
+        savedValues[timerIterations] = values;
+    }
+
     @Override
     public void run() {
-            interval = 1000000000/fps;
-            deltaT = 0;
-            finalTime = System.nanoTime();
-            long currentTime;
-            timer = 0;
-
+        interval = 1000000000/fps;
+        deltaT = 0;
+        finalTime = System.nanoTime();
+        long currentTime;
+        timer = 0;
+        
         while(windowThread != null){
+            
+            if(timerIterations < 0) timerIterations = 0;
 
             currentTime = System.nanoTime();
 
@@ -123,22 +144,36 @@ public class WindowPanel extends JPanel implements Runnable{
                 timer++;
             }
             if(timer >= 1000000000){
+                showSavedValues();
                 assignValues();
                 checkValues();
-                setValues();
+                displayValues();
+                saveValues();
+                timerIterations++;
                 timer = 0;
             }
 
         }
     }
 
-    public void setValues() {
+    public void displayValues() {
 
-        pressureTxt.setText("<html><body><p>Pressure :" + pressureVal + " bar        " + pressureWarning + " </p><br> </body></html>");
-        prcntN2Txt.setText("<html><body><p>N2 :" + prcntN2Val + "%            " + N2Warning + "</p><br></body></html>");
+        pressureTxt.setText("<html><body><p>Pressure :" + pressureVal + " bar " + pressureWarning + " </p><br> </body></html>");
+        prcntN2Txt.setText("<html><body><p>N2 :" + prcntN2Val + "% " + N2Warning + "</p><br></body></html>");
         prcntO2Txt.setText("<html><body><p>O2 :" + prcntO2Val + "% " + O2Warning + "</p><br></body></html>");
         depthTxt.setText("<html><body><p>Depth :" + depthVal + "m " + depthWarning + "</p><br></body></html>");
 
+        
+    }
+
+
+    public void showSavedValues(){
+        if(timerIterations >= 1){
+            savedText.setText("Pressure: " + savedValues[timerIterations - 1][0]
+            + " bar N2 : " + savedValues[timerIterations - 1][1] 
+            + "% O2: " + savedValues[timerIterations - 1][2]
+            + "% Depth: " + savedValues[timerIterations - 1][3] + " m");
+        }
     }
 
 
