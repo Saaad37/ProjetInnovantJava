@@ -13,7 +13,7 @@ public class WindowPanel extends JPanel implements Runnable {
     int prcntO2Val;
     int depthVal;
 
-    // TODO Comments and drawing graphs
+    // TODO Faire un graphe des valeurs depuis le debut du programme
 
     /*
      * Initialisation des variables.
