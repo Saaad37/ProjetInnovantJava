@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class WindowPanel extends JPanel implements Runnable {
 
+    /*
+     * Initialisation des variables de valeurs de pression, % de N2, % de O2,
+     * et profondeur.
+     */
     int pressureVal;
     int prcntN2Val;
     int prcntO2Val;
@@ -12,19 +15,24 @@ public class WindowPanel extends JPanel implements Runnable {
 
     // TODO Comments and drawing graphs
 
-    Thread windowThread;
-    Random rand = new Random();
-    Font font = new Font("Helvetica", Font.PLAIN, 20);
-    JLabel[] texts;
-    Color bgColor = new Color(24, 124, 209);
-    int[] values = new int[4];
-    int[][] savedValues = new int[7200][4]; // [[], [], [], ...]
-    int timerIterations;
+    /*
+     * Initialisation des variables.
+     */
 
-    ArrayList<Integer> pressureBound = new ArrayList<Integer>();
-    ArrayList<Integer> prcntN2Bound = new ArrayList<Integer>();
-    ArrayList<Integer> prcntO2Bound = new ArrayList<Integer>();
-    ArrayList<Integer> depthBound = new ArrayList<Integer>();
+    Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
+    Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
+                                // valeurs au hasard
+    Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
+    int[] values = new int[4]; // Création d'une liste qui va contenir les valeurs
+    int[][] savedValues = new int[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
+                                            // valeurs
+    // la liste savedValues va ressembler à ça [[], [], [], ...]
+    int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
+                         // l'index des valeurs sauvegardé
+
+    /*
+     * Initialisation des texte qui vont apparaître sur la fenêtre
+     */
 
     JLabel pressureTxt = new JLabel();
     JLabel prcntN2Txt = new JLabel();
@@ -37,13 +45,17 @@ public class WindowPanel extends JPanel implements Runnable {
     String O2Warning;
     String depthWarning;
 
+    // Variable qui servent un savoir quand une seconde passe
+
     int fps = 60;
     long timer;
     double deltaT;
     long finalTime;
     double interval;
 
-    public WindowPanel() {
+    public WindowPanel() { // Constructeur.
+
+        // Appliquer la police a tous les textes
 
         pressureTxt.setFont(font);
         prcntN2Txt.setFont(font);
@@ -51,11 +63,15 @@ public class WindowPanel extends JPanel implements Runnable {
         depthTxt.setFont(font);
         savedText.setFont(font);
 
+        // Donner un rectangle comme limite de textes
+
         pressureTxt.setBounds(new Rectangle(10, 100, 720, 50));
         prcntN2Txt.setBounds(new Rectangle(10, 150, 720, 50));
         prcntO2Txt.setBounds(new Rectangle(10, 200, 720, 50));
         depthTxt.setBounds(new Rectangle(10, 250, 720, 50));
         savedText.setBounds(new Rectangle(50, 400, 720, 50));
+
+        // this veut dire cette classe JPanel
 
         this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 600));
@@ -68,10 +84,15 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(savedText);
     }
 
+    // Commencer le thread
+
     public void startThread() {
         windowThread = new Thread(this);
         windowThread.start();
     }
+
+    // Au début du programme il va choisir une valeur aléatoire puis va choisir des
+    // variables au alentour de la valeur choisis précedemment
 
     public void assignValues() {
         if (timerIterations == 0) {
@@ -80,17 +101,23 @@ public class WindowPanel extends JPanel implements Runnable {
             prcntO2Val = rand.nextInt(80, 100);
             depthVal = rand.nextInt(120);
         } else {
-            pressureVal = rand.nextInt(Math.abs(pressureVal - 5), pressureVal + 5);
-            prcntN2Val = rand.nextInt(Math.abs(prcntN2Val - 5), prcntN2Val + 5);
-            prcntO2Val = rand.nextInt(Math.abs(prcntO2Val - 5), prcntO2Val + 5);
-            depthVal = rand.nextInt(Math.abs(depthVal - 5), depthVal + 5);
+            pressureVal = rand.nextInt(Math.abs(pressureVal - 10), pressureVal + 10);
+            prcntN2Val = rand.nextInt(Math.abs(prcntN2Val - 10), prcntN2Val + 10);
+            prcntO2Val = rand.nextInt(Math.abs(prcntO2Val - 10), prcntO2Val + 10);
+            depthVal = rand.nextInt(Math.abs(depthVal - 10), depthVal + 10);
 
         }
+
+        // Assigner ces valeurs à la liste des valeurs
+
         values[0] = pressureVal;
         values[1] = prcntN2Val;
         values[2] = prcntO2Val;
         values[3] = depthVal;
     }
+
+    // Va voir si les valeurs sont dans les normes sinon, elle va afficher un
+    // message d'alert
 
     public void checkValues() {
         if (pressureVal >= 50) {
@@ -127,9 +154,12 @@ public class WindowPanel extends JPanel implements Runnable {
 
     }
 
+    // Sauvegarde la liste de valeurs dans la liste des valeurs sauvegardé
     public void saveValues() {
         savedValues[timerIterations] = values;
     }
+
+    // Début du Thread
 
     @Override
     public void run() {
@@ -139,12 +169,12 @@ public class WindowPanel extends JPanel implements Runnable {
         long currentTime;
         timer = 0;
 
-        while (windowThread != null) {
+        while (windowThread != null) { // Boucle qui va tourner tant que le programme n'est pas fermé
 
-            if (timerIterations < 0)
+            if (timerIterations < 0) // Condition de précaution afin d'éviter des erreurs
                 timerIterations = 0;
 
-            currentTime = System.nanoTime();
+            currentTime = System.nanoTime(); // Sauvegarde le temps actuel en nanoseconde
 
             deltaT += (currentTime - finalTime) / interval;
             timer += currentTime - finalTime;
@@ -154,13 +184,14 @@ public class WindowPanel extends JPanel implements Runnable {
                 deltaT--;
                 timer++;
             }
-            if (timer >= 1000000000) {
-                showSavedValues();
-                assignValues();
-                checkValues();
-                displayValues();
-                saveValues();
-                timerIterations++;
+            if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
+                showSavedValues(); // Afficher les valeurs de la seconde d'avant
+                assignValues(); // Assimiler de nouvelles valeurs
+                checkValues(); // S'assure que si les valeurs ne sont pas dans les normes afficher un message
+                               // d'alert
+                displayValues(); // Afficher les valeurs
+                saveValues(); // Sauvegarder les valeurs dans la liste des valeurs sauvegardées
+                timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
                 timer = 0;
             }
 
@@ -169,14 +200,20 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void displayValues() {
 
+        // Afficher le texte des valeurs.
+
         pressureTxt.setText(
                 "<html><body><p>Pressure :" + pressureVal + " bar " + pressureWarning + " </p><br> </body></html>");
         prcntN2Txt.setText("<html><body><p>N2 :" + prcntN2Val + "% " + N2Warning + "</p><br></body></html>");
         prcntO2Txt.setText("<html><body><p>O2 :" + prcntO2Val + "% " + O2Warning + "</p><br></body></html>");
         depthTxt.setText("<html><body><p>Depth :" + depthVal + "m " + depthWarning + "</p><br></body></html>");
 
+        // **L'utilisation du html afin faire un saut de ligne.
+
     }
 
+    // Afficher les valeurs de la seconde d'avant ssi plus d'une seconde est passé
+    // depuis le début du programme
     public void showSavedValues() {
         if (timerIterations >= 1) {
             savedText.setText("Pressure: " + savedValues[timerIterations - 1][0]
