@@ -8,9 +8,15 @@ public class WindowPanel extends JPanel implements Runnable {
      * Initialisation des variables de valeurs de pression, % de N2, % de O2,
      * et profondeur.
      */
+
+    int normalO2PrcntBlood = 14;
+    int normalN2PrcntBlood = 80;
+    int P0 = 101325;
+    int rhoEauDeMer = 1025; // kg/m3
+
     int pressureVal;
-    int prcntN2Val;
-    int prcntO2Val;
+    int PaN2Val;
+    int PaO2Val;
     int depthVal;
 
     // TODO Faire un graphe des valeurs depuis le debut du programme
@@ -36,7 +42,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
     JLabel pressureTxt = new JLabel();
     JLabel prcntN2Txt = new JLabel();
-    JLabel prcntO2Txt = new JLabel();
+    JLabel PaO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
     JLabel savedText = new JLabel();
 
@@ -45,7 +51,7 @@ public class WindowPanel extends JPanel implements Runnable {
     String O2Warning;
     String depthWarning;
 
-    // Variable qui servent un savoir quand une seconde passe
+    // Variable qui servent a savoir quand une seconde passe
 
     int fps = 60;
     long timer;
@@ -59,16 +65,16 @@ public class WindowPanel extends JPanel implements Runnable {
 
         pressureTxt.setFont(font);
         prcntN2Txt.setFont(font);
-        prcntO2Txt.setFont(font);
+        PaO2Txt.setFont(font);
         depthTxt.setFont(font);
         savedText.setFont(font);
 
         // Donner un rectangle comme limite de textes
 
-        pressureTxt.setBounds(new Rectangle(10, 100, 720, 50));
-        prcntN2Txt.setBounds(new Rectangle(10, 150, 720, 50));
-        prcntO2Txt.setBounds(new Rectangle(10, 200, 720, 50));
-        depthTxt.setBounds(new Rectangle(10, 250, 720, 50));
+        prcntN2Txt.setBounds(new Rectangle(10, 100, 720, 50));
+        PaO2Txt.setBounds(new Rectangle(10, 150, 720, 50));
+        depthTxt.setBounds(new Rectangle(10, 200, 720, 50));
+        pressureTxt.setBounds(new Rectangle(10, 250, 720, 50));
         savedText.setBounds(new Rectangle(50, 400, 720, 50));
 
         // this veut dire cette classe JPanel
@@ -79,7 +85,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
         this.add(pressureTxt);
         this.add(prcntN2Txt);
-        this.add(prcntO2Txt);
+        this.add(PaO2Txt);
         this.add(depthTxt);
         this.add(savedText);
     }
@@ -96,24 +102,19 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void assignValues() {
         if (timerIterations == 0) {
-            pressureVal = rand.nextInt(15, 100);
-            prcntN2Val = rand.nextInt(92);
-            prcntO2Val = rand.nextInt(80, 100);
-            depthVal = rand.nextInt(120);
+            depthVal = 1;
         } else {
-            pressureVal = rand.nextInt(Math.abs(pressureVal - 10), pressureVal + 10);
-            prcntN2Val = rand.nextInt(Math.abs(prcntN2Val - 10), prcntN2Val + 10);
-            prcntO2Val = rand.nextInt(Math.abs(prcntO2Val - 10), prcntO2Val + 10);
-            depthVal = rand.nextInt(Math.abs(depthVal - 10), depthVal + 10);
-
         }
+        // pressureVal = * depthVal;
+        PaN2Val = pressureVal * normalN2PrcntBlood;
+        PaO2Val = pressureVal * normalO2PrcntBlood;
 
         // Assigner ces valeurs à la liste des valeurs
 
-        values[0] = pressureVal;
-        values[1] = prcntN2Val;
-        values[2] = prcntO2Val;
-        values[3] = depthVal;
+        values[0] = depthVal;
+        values[1] = pressureVal;
+        values[2] = PaN2Val;
+        values[3] = PaO2Val;
     }
 
     // Va voir si les valeurs sont dans les normes sinon, elle va afficher un
@@ -127,19 +128,19 @@ public class WindowPanel extends JPanel implements Runnable {
             pressureWarning = "Normal pressure, just be careful..";
             pressureTxt.setForeground(Color.BLACK);
         }
-        if (prcntN2Val >= 10) {
+        if (PaN2Val >= 10) {
             N2Warning = "RETURN TO THE SURFACE N2 IN BLOOD IS TOO HIGH";
             prcntN2Txt.setForeground(Color.RED);
-        } else if (prcntN2Val < 10) {
+        } else if (PaN2Val < 10) {
             N2Warning = "Normal N2 percentages";
             prcntN2Txt.setForeground(Color.black);
         }
-        if (prcntO2Val >= 92) {
+        if (PaO2Val >= 92) {
             O2Warning = "Normal Saturation.";
-            prcntO2Txt.setForeground(Color.black);
-        } else if (prcntO2Val < 92) {
+            PaO2Txt.setForeground(Color.black);
+        } else if (PaO2Val < 92) {
             O2Warning = "O2 SATURATION IS TOO LOW !";
-            prcntO2Txt.setForeground(Color.RED);
+            PaO2Txt.setForeground(Color.RED);
         }
         if (depthVal >= 1 && depthVal < 58) {
             depthWarning = "You are using a normal nitrox mixture.";
@@ -202,11 +203,11 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Afficher le texte des valeurs.
 
+        depthTxt.setText("<html><body><p>Depth :" + depthVal + "m " + depthWarning + "</p><br></body></html>");
         pressureTxt.setText(
                 "<html><body><p>Pressure :" + pressureVal + " bar " + pressureWarning + " </p><br> </body></html>");
-        prcntN2Txt.setText("<html><body><p>N2 :" + prcntN2Val + "% " + N2Warning + "</p><br></body></html>");
-        prcntO2Txt.setText("<html><body><p>O2 :" + prcntO2Val + "% " + O2Warning + "</p><br></body></html>");
-        depthTxt.setText("<html><body><p>Depth :" + depthVal + "m " + depthWarning + "</p><br></body></html>");
+        PaO2Txt.setText("<html><body><p>O2 :" + PaO2Val + "% " + O2Warning + "</p><br></body></html>");
+        prcntN2Txt.setText("<html><body><p>N2 :" + PaN2Val + "% " + N2Warning + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -216,10 +217,10 @@ public class WindowPanel extends JPanel implements Runnable {
     // depuis le début du programme
     public void showSavedValues() {
         if (timerIterations >= 1) {
-            savedText.setText("Pressure: " + savedValues[timerIterations - 1][0]
-                    + " bar N2 : " + savedValues[timerIterations - 1][1]
-                    + "% O2: " + savedValues[timerIterations - 1][2]
-                    + "% Depth: " + savedValues[timerIterations - 1][3] + " m");
+            savedText.setText("Profondeur: " + savedValues[timerIterations - 1][0] + " m " + 
+                                " " + savedValues[timerIterations - 1][1] + " m " +   
+                                "% PaN2: " + savedValues[timerIterations - 1][2] + " m " + 
+                                " PaO2: " + savedValues[timerIterations - 1][3]);
         }
     }
 }
