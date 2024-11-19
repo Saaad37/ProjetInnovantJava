@@ -5,19 +5,21 @@ import java.util.Random;
 public class WindowPanel extends JPanel implements Runnable {
 
     /*
-     * Initialisation des variables de valeurs de pression, % de N2, % de O2,
+     * Initialisation des variables de valeurs de pression, Pression partielle de
+     * N2, pression partielle de O2,
      * et profondeur.
      */
 
-    int normalO2PrcntBlood = 14;
-    int normalN2PrcntBlood = 80;
-    int P0 = 101325;
-    int rhoEauDeMer = 1025; // kg/m3
+    float XO2 = 0.2f; // %
+    float XN2 = 0.3f; // %
+    int P0 = 101325; // Pascal
+    int rhoSaltedWater = 1025; // kg/m3
+    float g = 9.81f; // m/s^2 ou N/Kg
 
-    int pressureVal;
-    int PaN2Val;
-    int PaO2Val;
-    int depthVal;
+    float pressureVal;
+    float PaN2Val;
+    float PaO2Val;
+    float depthVal;
 
     // TODO Faire un graphe des valeurs depuis le debut du programme
 
@@ -29,9 +31,9 @@ public class WindowPanel extends JPanel implements Runnable {
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
                                 // valeurs au hasard
     Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
-    int[] values = new int[4]; // Création d'une liste qui va contenir les valeurs
-    int[][] savedValues = new int[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
-                                            // valeurs
+    float[] values = new float[4]; // Création d'une liste qui va contenir les valeurs
+    float[][] savedValues = new float[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
+                                                // valeurs
     // la liste savedValues va ressembler à ça [[], [], [], ...]
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
                          // l'index des valeurs sauvegardé
@@ -71,11 +73,11 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Donner un rectangle comme limite de textes
 
-        prcntN2Txt.setBounds(new Rectangle(10, 100, 720, 50));
-        PaO2Txt.setBounds(new Rectangle(10, 150, 720, 50));
-        depthTxt.setBounds(new Rectangle(10, 200, 720, 50));
-        pressureTxt.setBounds(new Rectangle(10, 250, 720, 50));
-        savedText.setBounds(new Rectangle(50, 400, 720, 50));
+        prcntN2Txt.setBounds(new Rectangle(50, 100, 720, 50));
+        PaO2Txt.setBounds(new Rectangle(50, 150, 720, 50));
+        depthTxt.setBounds(new Rectangle(50, 200, 720, 50));
+        pressureTxt.setBounds(new Rectangle(50, 250, 720, 50));
+        savedText.setBounds(new Rectangle(10, 400, 720, 50));
 
         // this veut dire cette classe JPanel
 
@@ -101,13 +103,10 @@ public class WindowPanel extends JPanel implements Runnable {
     // variables au alentour de la valeur choisis précedemment
 
     public void assignValues() {
-        if (timerIterations == 0) {
-            depthVal = 1;
-        } else {
-        }
-        // pressureVal = * depthVal;
-        PaN2Val = pressureVal * normalN2PrcntBlood;
-        PaO2Val = pressureVal * normalO2PrcntBlood;
+        depthVal++;
+        pressureVal = (P0 + rhoSaltedWater * g * depthVal) * (float) Math.pow(10, -5);// Pascal + km/m^3 * m/s^2 * m
+        PaN2Val = (pressureVal / 133.3223684f * XN2); // mmHg
+        PaO2Val = (pressureVal / 133.3223684f * XO2); // mmHg
 
         // Assigner ces valeurs à la liste des valeurs
 
@@ -188,8 +187,9 @@ public class WindowPanel extends JPanel implements Runnable {
             if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
                 showSavedValues(); // Afficher les valeurs de la seconde d'avant
                 assignValues(); // Assimiler de nouvelles valeurs
-                checkValues(); // S'assure que si les valeurs ne sont pas dans les normes afficher un message
-                               // d'alert
+                // checkValues(); // S'assure que si les valeurs ne sont pas dans les normes
+                // afficher un message
+                // d'alert
                 displayValues(); // Afficher les valeurs
                 saveValues(); // Sauvegarder les valeurs dans la liste des valeurs sauvegardées
                 timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
@@ -203,11 +203,12 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Afficher le texte des valeurs.
 
-        depthTxt.setText("<html><body><p>Depth :" + depthVal + "m " + depthWarning + "</p><br></body></html>");
+        depthTxt.setText("<html><body><p>Depth :" + (int) depthVal + "m " + depthWarning + "</p><br></body></html>");
         pressureTxt.setText(
-                "<html><body><p>Pressure :" + pressureVal + " bar " + pressureWarning + " </p><br> </body></html>");
-        PaO2Txt.setText("<html><body><p>O2 :" + PaO2Val + "% " + O2Warning + "</p><br></body></html>");
-        prcntN2Txt.setText("<html><body><p>N2 :" + PaN2Val + "% " + N2Warning + "</p><br></body></html>");
+                "<html><body><p>Pressure :" + (int) pressureVal + " bar " + pressureWarning
+                        + " </p><br> </body></html>");
+        PaO2Txt.setText("<html><body><p>PaO2 :" + (int) PaO2Val + " Pa " + O2Warning + "</p><br></body></html>");
+        prcntN2Txt.setText("<html><body><p>PaN2 :" + (int) PaN2Val + " Pa " + N2Warning + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -217,10 +218,10 @@ public class WindowPanel extends JPanel implements Runnable {
     // depuis le début du programme
     public void showSavedValues() {
         if (timerIterations >= 1) {
-            savedText.setText("Profondeur: " + savedValues[timerIterations - 1][0] + " m " + 
-                                " " + savedValues[timerIterations - 1][1] + " m " +   
-                                "% PaN2: " + savedValues[timerIterations - 1][2] + " m " + 
-                                " PaO2: " + savedValues[timerIterations - 1][3]);
+            savedText.setText("Profondeur: " + savedValues[timerIterations - 1][0] + " m " +
+                    "Pression " + savedValues[timerIterations - 1][1] + " bar " +
+                    "PaN2: " + savedValues[timerIterations - 1][2] + " Pa" +
+                    " PaO2: " + savedValues[timerIterations - 1][3] + " Pa");
         }
     }
 }
