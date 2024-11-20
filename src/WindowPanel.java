@@ -12,7 +12,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
     float XO2 = 0.2f; // %
     float XN2 = 0.3f; // %
-    int P0 = 101325; // Pascal
+    int P0 = 762; // mmHg
     int rhoSaltedWater = 1025; // kg/m3
     float g = 9.81f; // m/s^2 ou N/Kg
 
@@ -104,9 +104,9 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void assignValues() {
         depthVal++;
-        pressureVal = (P0 + rhoSaltedWater * g * depthVal) * (float) Math.pow(10, -5);// Pascal + km/m^3 * m/s^2 * m
-        PaN2Val = (pressureVal / 133.3223684f * XN2); // mmHg
-        PaO2Val = (pressureVal / 133.3223684f * XO2); // mmHg
+        pressureVal = P0 + (rhoSaltedWater * g * depthVal);// mmHg
+        PaN2Val = pressureVal * XN2; // mmHg
+        PaO2Val = pressureVal * XO2; // mmHg
 
         // Assigner ces valeurs à la liste des valeurs
 
@@ -205,7 +205,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
         depthTxt.setText("<html><body><p>Depth :" + (int) depthVal + "m " + depthWarning + "</p><br></body></html>");
         pressureTxt.setText(
-                "<html><body><p>Pressure :" + (int) pressureVal + " bar " + pressureWarning
+                "<html><body><p>Pressure :" + (int) pressureVal + " bar Ptotal" + pressureWarning
                         + " </p><br> </body></html>");
         PaO2Txt.setText("<html><body><p>PaO2 :" + (int) PaO2Val + " Pa " + O2Warning + "</p><br></body></html>");
         prcntN2Txt.setText("<html><body><p>PaN2 :" + (int) PaN2Val + " Pa " + N2Warning + "</p><br></body></html>");
