@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 import java.util.Random;
 
 public class WindowPanel extends JPanel implements Runnable {
@@ -37,6 +38,8 @@ public class WindowPanel extends JPanel implements Runnable {
     // la liste savedValues va ressembler à ça [[], [], [], ...]
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
                          // l'index des valeurs sauvegardé
+    Color bgColor = new Color(34, 48, 97);
+    ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/assets/subrotic.jpg")));
 
     /*
      * Initialisation des texte qui vont apparaître sur la fenêtre
@@ -47,6 +50,7 @@ public class WindowPanel extends JPanel implements Runnable {
     JLabel PaO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
     JLabel savedText = new JLabel();
+    JLabel subroticLogo = new JLabel();
 
     String pressureWarning;
     String N2Warning;
@@ -73,6 +77,8 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Donner un rectangle comme limite de textes
 
+        subroticLogo.setIcon(subroticIcon);
+        subroticLogo.setBounds(new Rectangle(10, 10, 100, 100));
         prcntN2Txt.setBounds(new Rectangle(50, 100, 720, 50));
         PaO2Txt.setBounds(new Rectangle(50, 150, 720, 50));
         depthTxt.setBounds(new Rectangle(50, 200, 720, 50));
@@ -83,9 +89,8 @@ public class WindowPanel extends JPanel implements Runnable {
 
         this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 600));
-        this.setBackground(Color.WHITE);
-
-        this.add(pressureTxt);
+        this.setBackground(bgColor);
+        this.add(subroticLogo);
         this.add(prcntN2Txt);
         this.add(PaO2Txt);
         this.add(depthTxt);
