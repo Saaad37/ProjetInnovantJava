@@ -1,10 +1,12 @@
 import javax.swing.*;
+import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
 
         JFrame window = new JFrame(); // Initialisation de la fenêtre
         WindowPanel wp = new WindowPanel(); // Création d'une instance du panel
+
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setTitle("Surveillance System");

@@ -13,11 +13,13 @@ public class WindowPanel extends JPanel implements Runnable {
 
     float XO2 = 0.2f; // %
     float XN2 = 0.3f; // %
-    int P0 = 762; // mmHg
+    float P0 = 1.013f; // mmHg
+    int P0Pasc = 101325;
     int rhoSaltedWater = 1025; // kg/m3
     float g = 9.81f; // m/s^2 ou N/Kg
 
     float pressureVal;
+    float pressureValPasc;
     float PaN2Val;
     float PaO2Val;
     float depthVal;
@@ -36,17 +38,18 @@ public class WindowPanel extends JPanel implements Runnable {
     float[][] savedValues = new float[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
                                                 // valeurs
     // la liste savedValues va ressembler à ça [[], [], [], ...]
+
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
                          // l'index des valeurs sauvegardé
     Color bgColor = new Color(34, 48, 97);
-    ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/assets/subrotic.jpg")));
+    ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("./subrotic.jpg")));
 
     /*
      * Initialisation des texte qui vont apparaître sur la fenêtre
      */
 
     JLabel pressureTxt = new JLabel();
-    JLabel prcntN2Txt = new JLabel();
+    JLabel PaN2Txt = new JLabel();
     JLabel PaO2Txt = new JLabel();
     JLabel depthTxt = new JLabel();
     JLabel savedText = new JLabel();
@@ -70,28 +73,38 @@ public class WindowPanel extends JPanel implements Runnable {
         // Appliquer la police a tous les textes
 
         pressureTxt.setFont(font);
-        prcntN2Txt.setFont(font);
+        PaN2Txt.setFont(font);
         PaO2Txt.setFont(font);
         depthTxt.setFont(font);
         savedText.setFont(font);
+        subroticLogo.setIcon(subroticIcon);
+
+        pressureTxt.setForeground(Color.white);
+        PaN2Txt.setForeground(Color.white);
+        PaO2Txt.setForeground(Color.white);
+        depthTxt.setForeground(Color.white);
+        savedText.setForeground(Color.white);
 
         // Donner un rectangle comme limite de textes
+        subroticLogo.setBounds(new Rectangle(20, 20, 125, 125));
+        PaN2Txt.setBounds(new Rectangle(50, 150, 720, 50));
+        PaO2Txt.setBounds(new Rectangle(50, 200, 720, 50));
+        depthTxt.setBounds(new Rectangle(50, 250, 720, 50));
+        pressureTxt.setBounds(new Rectangle(50, 300, 720, 50));
+        savedText.setBounds(new Rectangle(10, 425, 720, 50));
 
-        subroticLogo.setIcon(subroticIcon);
-        subroticLogo.setBounds(new Rectangle(10, 10, 100, 100));
-        prcntN2Txt.setBounds(new Rectangle(50, 100, 720, 50));
-        PaO2Txt.setBounds(new Rectangle(50, 150, 720, 50));
-        depthTxt.setBounds(new Rectangle(50, 200, 720, 50));
-        pressureTxt.setBounds(new Rectangle(50, 250, 720, 50));
-        savedText.setBounds(new Rectangle(10, 400, 720, 50));
+        subroticIcon.setImage(
+                resizeImage(subroticIcon, subroticLogo.getBounds().width, subroticLogo.getBounds().height).getImage());
 
         // this veut dire cette classe JPanel
 
         this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 600));
         this.setBackground(bgColor);
+
         this.add(subroticLogo);
-        this.add(prcntN2Txt);
+        this.add(pressureTxt);
+        this.add(PaN2Txt);
         this.add(PaO2Txt);
         this.add(depthTxt);
         this.add(savedText);
@@ -109,16 +122,17 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void assignValues() {
         depthVal++;
-        pressureVal = P0 + (rhoSaltedWater * g * depthVal);// mmHg
-        PaN2Val = pressureVal * XN2; // mmHg
-        PaO2Val = pressureVal * XO2; // mmHg
+        pressureValPasc = (P0Pasc + (rhoSaltedWater * g * depthVal));// Pascal
+        pressureVal = pressureValPasc / 100000;
+        PaN2Val = (pressureVal - P0) * 750 * XN2; // mmHg
+        PaO2Val = (pressureVal - P0) * 750 * XO2; // mmHg
 
         // Assigner ces valeurs à la liste des valeurs
 
         values[0] = depthVal;
-        values[1] = pressureVal;
-        values[2] = PaN2Val;
-        values[3] = PaO2Val;
+        values[1] = significativeFigures(pressureVal, 3);
+        values[2] = significativeFigures(PaN2Val, 2);
+        values[3] = significativeFigures(PaO2Val, 2);
     }
 
     // Va voir si les valeurs sont dans les normes sinon, elle va afficher un
@@ -134,10 +148,10 @@ public class WindowPanel extends JPanel implements Runnable {
         }
         if (PaN2Val >= 10) {
             N2Warning = "RETURN TO THE SURFACE N2 IN BLOOD IS TOO HIGH";
-            prcntN2Txt.setForeground(Color.RED);
+            PaN2Txt.setForeground(Color.RED);
         } else if (PaN2Val < 10) {
             N2Warning = "Normal N2 percentages";
-            prcntN2Txt.setForeground(Color.black);
+            PaN2Txt.setForeground(Color.black);
         }
         if (PaO2Val >= 92) {
             O2Warning = "Normal Saturation.";
@@ -192,9 +206,12 @@ public class WindowPanel extends JPanel implements Runnable {
             if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
                 showSavedValues(); // Afficher les valeurs de la seconde d'avant
                 assignValues(); // Assimiler de nouvelles valeurs
-                // checkValues(); // S'assure que si les valeurs ne sont pas dans les normes
-                // afficher un message
-                // d'alert
+                // checkValues();
+                /*
+                 * S'assure que si les valeurs ne sont pas dans les normes
+                 * afficher un message
+                 * d'alert
+                 */
                 displayValues(); // Afficher les valeurs
                 saveValues(); // Sauvegarder les valeurs dans la liste des valeurs sauvegardées
                 timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
@@ -210,10 +227,10 @@ public class WindowPanel extends JPanel implements Runnable {
 
         depthTxt.setText("<html><body><p>Depth :" + (int) depthVal + "m " + depthWarning + "</p><br></body></html>");
         pressureTxt.setText(
-                "<html><body><p>Pressure :" + (int) pressureVal + " bar Ptotal" + pressureWarning
+                "<html><body><p>Pressure :" + significativeFigures(pressureVal, 3) + " bar" + pressureWarning
                         + " </p><br> </body></html>");
-        PaO2Txt.setText("<html><body><p>PaO2 :" + (int) PaO2Val + " Pa " + O2Warning + "</p><br></body></html>");
-        prcntN2Txt.setText("<html><body><p>PaN2 :" + (int) PaN2Val + " Pa " + N2Warning + "</p><br></body></html>");
+        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaO2Val, 3) + " mmHg " + O2Warning + "</p><br></body></html>");
+        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val, 3) + " mmHg " + N2Warning + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -229,4 +246,17 @@ public class WindowPanel extends JPanel implements Runnable {
                     " PaO2: " + savedValues[timerIterations - 1][3] + " Pa");
         }
     }
+
+    public ImageIcon resizeImage(ImageIcon imageIcon, int w, int h) {
+        Image image = imageIcon.getImage();
+        Image newImage = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(newImage);
+        return imageIcon;
+    }
+
+    public float significativeFigures(float val, int fig){
+        double newVal = (double) val;
+        return (float) Math.round((newVal*Math.pow(10, fig))/Math.pow(10, fig));
+    }
+
 }
