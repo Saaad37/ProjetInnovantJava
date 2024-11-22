@@ -27,6 +27,7 @@ public class WindowPanel extends JPanel implements Runnable {
     final int rhoSaltedWater = 1025; // kg/m3
     final double g = 9.81f; // m/s^2 ou N/Kg
     
+    final String alarmPath = "/assets/alarm.wav";
     
     double pressureVal;
     double pressureValPasc;
@@ -42,7 +43,8 @@ public class WindowPanel extends JPanel implements Runnable {
 
 
 
-     
+    double maxValN2 = (4 * XN2) * 750;
+
     Clip audio;
     Button startButton = new Button(new Rectangle(190, 500, 80, 35), "Start");
     Button endButton = new Button(new Rectangle(400, 500, 80, 35), "Pause");
@@ -92,14 +94,12 @@ public class WindowPanel extends JPanel implements Runnable {
         startButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e){
             startThread();
-            playSound("/assets/alarm.wav");
         }
         });
 
         endButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 stopThread();
-                stopSound();
             }
         });
 
@@ -178,34 +178,31 @@ public class WindowPanel extends JPanel implements Runnable {
     public void checkValues() {
         if (pressureVal >= 50) {
             pressureWarning = "RETURN TO THE SURFACE PRESSURE TOO HIGH";
-            pressureTxt.setForeground(Color.RED);
+            blinkingColors(pressureTxt);
+            playSound(alarmPath);
         } else if (pressureVal < 50) {
             pressureWarning = "Normal pressure, just be careful..";
-            pressureTxt.setForeground(Color.BLACK);
+            pressureTxt.setForeground(defaultColor);
+            stopSound(alarmPath);
         }
-        if (PaN2Val >= 10) {
+        if (PaN2Val >= maxValN2) {
             N2Warning = "RETURN TO THE SURFACE N2 IN BLOOD IS TOO HIGH";
-            PaN2Txt.setForeground(Color.RED);
-        } else if (PaN2Val < 10) {
-            N2Warning = "Normal N2 percentages";
-            PaN2Txt.setForeground(Color.black);
+            blinkingColors(PaN2Txt);
+            playSound(alarmPath);
+        } else if (PaN2Val < maxValN2) {
+            N2Warning = "Normal N2 Partial Pression";
+            PaN2Txt.setForeground(defaultColor);
+            stopSound(alarmPath);
         }
-        if (PaO2Val >= 92) {
-            O2Warning = "Normal Saturation.";
-            PaO2Txt.setForeground(Color.black);
-        } else if (PaO2Val < 92) {
-            O2Warning = "O2 SATURATION IS TOO LOW !";
-            PaO2Txt.setForeground(Color.RED);
-        }
-        if (depthVal >= 1 && depthVal < 58) {
+        if (depthVal >= 1 && depthVal <= 30) {
             depthWarning = "You are using a normal nitrox mixture.";
             depthTxt.setForeground(new Color(98, 209, 24));
-        } else if (depthVal > 58 && depthVal <= 60) {
+        } else if (depthVal > 30 && depthVal <= 60) {
             depthWarning = "Be careful you are switching to a trimix gaz mixture";
             depthTxt.setForeground(Color.gray);
         } else if (depthVal > 60 && depthVal < 120) {
             depthWarning = "Be careful you are not using a normal gaz mixture";
-            depthTxt.setForeground(Color.RED);
+            blinkingColors(depthTxt);
         }
 
     }
@@ -243,7 +240,7 @@ public class WindowPanel extends JPanel implements Runnable {
             if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
                 showSavedValues(); // Afficher les valeurs de la seconde d'avant
                 assignValues(); // Assimiler de nouvelles valeurs
-                // checkValues();
+                checkValues();
                 /*
                  * S'assure que si les valeurs ne sont pas dans les normes
                  * afficher un message
@@ -308,9 +305,27 @@ public class WindowPanel extends JPanel implements Runnable {
         }
     }
 
-    public void stopSound(){
-       audio.stop();
+    public void stopSound(String path){
+       try{
+        AudioInputStream AIS = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
+        audio = AudioSystem.getClip();
+        audio.open(AIS);
+        if(audio.isRunning()){
+            audio.stop();
+            audio.close();
+        }
+       }catch(LineUnavailableException | UnsupportedAudioFileException | IOException e){
+        e.printStackTrace();
+       }
     }
 
+
+    public void blinkingColors(Component comp){
+        if((timerIterations/interval)%2 == 0){
+            comp.setForeground(Color.red);
+        }else{
+            comp.setForeground(defaultColor);
+        }
+    }
 
 }
