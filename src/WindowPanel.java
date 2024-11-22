@@ -1,7 +1,14 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
 
@@ -13,18 +20,19 @@ public class WindowPanel extends JPanel implements Runnable {
      * et profondeur.
      */
 
-    final float XO2 = 0.2f; // %
-    final float XN2 = 0.3f; // %
-    final float P0 = 1.013f; // mmHg
+    final double XO2 = 0.2f; // %
+    final double XN2 = 0.8f; // %
+    final double P0 = 1.013f; // mmHg
     int P0Pasc = 101325;
     final int rhoSaltedWater = 1025; // kg/m3
-    final float g = 9.81f; // m/s^2 ou N/Kg
-
-    float pressureVal;
-    float pressureValPasc;
-    float PaN2Val;
-    float PaO2Val;
-    float depthVal;
+    final double g = 9.81f; // m/s^2 ou N/Kg
+    
+    
+    double pressureVal;
+    double pressureValPasc;
+    double PaN2Val;
+    double PaO2Val;
+    double depthVal;
 
     // TODO Faire un graphe des valeurs depuis le debut du programme
 
@@ -32,20 +40,25 @@ public class WindowPanel extends JPanel implements Runnable {
      * Initialisation des variables.
      */
 
+
+
+     
+    Clip audio;
     Button startButton = new Button(new Rectangle(190, 500, 80, 35), "Start");
-    Button endButton = new Button(new Rectangle(400, 500, 80, 35), "Stop");
+    Button endButton = new Button(new Rectangle(400, 500, 80, 35), "Pause");
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
                                 // valeurs au hasard
     Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
-    float[] values = new float[4]; // Création d'une liste qui va contenir les valeurs
-    float[][] savedValues = new float[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
+    double[] values = new double[4]; // Création d'une liste qui va contenir les valeurs
+    double[][] savedValues = new double[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
                                                 // valeurs
     // la liste savedValues va ressembler à ça [[], [], [], ...]
 
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
                          // l'index des valeurs sauvegardé
     Color bgColor = new Color(34, 48, 97);
+    Color defaultColor = Color.WHITE;
     ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("./assets/subrotic.jpg")));
 
     /*
@@ -79,12 +92,14 @@ public class WindowPanel extends JPanel implements Runnable {
         startButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e){
             startThread();
+            playSound("/assets/alarm.wav");
         }
         });
 
         endButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 stopThread();
+                stopSound();
             }
         });
 
@@ -95,11 +110,11 @@ public class WindowPanel extends JPanel implements Runnable {
         savedText.setFont(font);
         subroticLogo.setIcon(subroticIcon);
 
-        pressureTxt.setForeground(Color.white);
-        PaN2Txt.setForeground(Color.white);
-        PaO2Txt.setForeground(Color.white);
-        depthTxt.setForeground(Color.white);
-        savedText.setForeground(Color.white);
+        pressureTxt.setForeground(defaultColor);
+        PaN2Txt.setForeground(defaultColor);
+        PaO2Txt.setForeground(defaultColor);
+        depthTxt.setForeground(defaultColor);
+        savedText.setForeground(defaultColor);
 
         // Donner un rectangle comme limite de textes
         subroticLogo.setBounds(new Rectangle(20, 20, 125, 125));
@@ -143,18 +158,18 @@ public class WindowPanel extends JPanel implements Runnable {
     // variables au alentour de la valeur choisis précedemment
 
     public void assignValues() {
-        depthVal++;
         pressureValPasc = P0Pasc + (rhoSaltedWater * g * depthVal); // Pa
         pressureVal = pressureValPasc * (float) Math.pow(10, -5); // bar
         PaN2Val = (pressureValPasc /133) * XN2; // mmHg
         PaO2Val = (pressureValPasc /133) * XO2; // mmHg
+        depthVal++;
 
         // Assigner ces valeurs à la liste des valeurs
 
         values[0] = depthVal;
         values[1] = significativeFigures(pressureVal, 3);
-        values[2] = significativeFigures(PaN2Val, 2);
-        values[3] = significativeFigures(PaO2Val, 2);
+        values[2] = significativeFigures(PaN2Val, 3);
+        values[3] = significativeFigures(PaO2Val, 3);
     }
 
     // Va voir si les valeurs sont dans les normes sinon, elle va afficher un
@@ -247,12 +262,12 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Afficher le texte des valeurs.
 
-        depthTxt.setText("<html><body><p>Depth :" + (int) depthVal + "m " + depthWarning + "</p><br></body></html>");
+        depthTxt.setText("<html><body><p>Depth :" + (int) significativeFigures(depthVal, 3) + "m " + depthWarning + "</p><br></body></html>");
         pressureTxt.setText(
-                "<html><body><p>Pressure :" + significativeFigures(pressureVal, 3) + " bar" + pressureWarning
+                "<html><body><p>Pressure :" + significativeFigures(pressureVal, 3) + " bar " + pressureWarning
                         + " </p><br> </body></html>");
-        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaO2Val, 3) + " mmHg " + O2Warning + "</p><br></body></html>");
-        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val, 3) + " mmHg " + N2Warning + "</p><br></body></html>");
+        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaN2Val, 3) + " mmHg " + O2Warning + "</p><br></body></html>");
+        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaO2Val, 3) + " mmHg " + N2Warning + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -276,9 +291,25 @@ public class WindowPanel extends JPanel implements Runnable {
         return imageIcon;
     }
 
-    public float significativeFigures(float val, int fig){
-        double newVal = (double) val;
-        return (float) Math.round((newVal*Math.pow(10, fig))/Math.pow(10, fig));
+    public double significativeFigures(double val, int fig){
+        return Math.round((val*100)/100);
+    }
+
+    public void playSound(String path){
+        try{
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
+            audio = AudioSystem.getClip();
+            audio.open(audioStream);
+            audio.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+        catch(UnsupportedAudioFileException| LineUnavailableException | IOException e){
+            System.out.println("Error Occured...");
+            e.printStackTrace();
+        }
+    }
+
+    public void stopSound(){
+       audio.stop();
     }
 
 

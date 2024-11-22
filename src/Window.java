@@ -14,7 +14,6 @@ public class Window extends JFrame{
         this.setVisible(true);
 
         this.pack(); // Affichage de la fenêtre.
-        // wp.startThread(); // Faire en sorte que le Thread ne sois pas nul et donc lance la boucle
     }
 
 
