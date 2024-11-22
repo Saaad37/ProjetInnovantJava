@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Objects;
 import java.util.Random;
 
@@ -11,12 +13,12 @@ public class WindowPanel extends JPanel implements Runnable {
      * et profondeur.
      */
 
-    float XO2 = 0.2f; // %
-    float XN2 = 0.3f; // %
-    float P0 = 1.013f; // mmHg
+    final float XO2 = 0.2f; // %
+    final float XN2 = 0.3f; // %
+    final float P0 = 1.013f; // mmHg
     int P0Pasc = 101325;
-    int rhoSaltedWater = 1025; // kg/m3
-    float g = 9.81f; // m/s^2 ou N/Kg
+    final int rhoSaltedWater = 1025; // kg/m3
+    final float g = 9.81f; // m/s^2 ou N/Kg
 
     float pressureVal;
     float pressureValPasc;
@@ -30,6 +32,8 @@ public class WindowPanel extends JPanel implements Runnable {
      * Initialisation des variables.
      */
 
+    Button startButton = new Button(new Rectangle(190, 500, 80, 35), "Start");
+    Button endButton = new Button(new Rectangle(400, 500, 80, 35), "Stop");
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
                                 // valeurs au hasard
@@ -42,7 +46,7 @@ public class WindowPanel extends JPanel implements Runnable {
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
                          // l'index des valeurs sauvegardé
     Color bgColor = new Color(34, 48, 97);
-    ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("./subrotic.jpg")));
+    ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("./assets/subrotic.jpg")));
 
     /*
      * Initialisation des texte qui vont apparaître sur la fenêtre
@@ -71,6 +75,18 @@ public class WindowPanel extends JPanel implements Runnable {
     public WindowPanel() { // Constructeur.
 
         // Appliquer la police a tous les textes
+
+        startButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){
+            startThread();
+        }
+        });
+
+        endButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                stopThread();
+            }
+        });
 
         pressureTxt.setFont(font);
         PaN2Txt.setFont(font);
@@ -108,6 +124,8 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(PaO2Txt);
         this.add(depthTxt);
         this.add(savedText);
+        this.add(startButton);
+        this.add(endButton);
     }
 
     // Commencer le thread
@@ -117,15 +135,19 @@ public class WindowPanel extends JPanel implements Runnable {
         windowThread.start();
     }
 
+    public void stopThread(){
+        windowThread = null;
+    }
+
     // Au début du programme il va choisir une valeur aléatoire puis va choisir des
     // variables au alentour de la valeur choisis précedemment
 
     public void assignValues() {
         depthVal++;
-        pressureValPasc = (P0Pasc + (rhoSaltedWater * g * depthVal));// Pascal
-        pressureVal = pressureValPasc / 100000;
-        PaN2Val = (pressureVal - P0) * 750 * XN2; // mmHg
-        PaO2Val = (pressureVal - P0) * 750 * XO2; // mmHg
+        pressureValPasc = P0Pasc + (rhoSaltedWater * g * depthVal); // Pa
+        pressureVal = pressureValPasc * (float) Math.pow(10, -5); // bar
+        PaN2Val = (pressureValPasc /133) * XN2; // mmHg
+        PaO2Val = (pressureValPasc /133) * XO2; // mmHg
 
         // Assigner ces valeurs à la liste des valeurs
 
@@ -258,5 +280,6 @@ public class WindowPanel extends JPanel implements Runnable {
         double newVal = (double) val;
         return (float) Math.round((newVal*Math.pow(10, fig))/Math.pow(10, fig));
     }
+
 
 }
