@@ -3,7 +3,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Path2D;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 
@@ -75,9 +77,7 @@ public class WindowPanel extends JPanel implements Runnable {
     JLabel savedText = new JLabel();
     JLabel subroticLogo = new JLabel();
 
-    String pressureWarning;
     String N2Warning;
-    String O2Warning;
     String depthWarning;
 
     // Variable qui servent a savoir quand une seconde passe
@@ -165,6 +165,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void stopThread(){
         windowThread = null;
+        soundSys.stopSound();
     }
 
     // Au début du programme il va choisir une valeur aléatoire puis va choisir des
@@ -173,9 +174,12 @@ public class WindowPanel extends JPanel implements Runnable {
     public void resetValues(){
         depthVal = 0;
         savedValues.clear();
-        for(int i = 0;i != values.length; i++){
-            values[i] = (double) 0;
-        }
+        Arrays.fill(values, (double) 0);
+        timerIterations = 0;
+        timer = 0;
+        checkValues();
+        displayValues();
+        System.out.println(savedValues.toString());
     }
 
     public void assignValues() {
@@ -188,25 +192,17 @@ public class WindowPanel extends JPanel implements Runnable {
         // Assigner ces valeurs à la liste des valeurs
 
         values[0] = depthVal;
-        values[1] = significativeFigures(pressureVal, 3);
-        values[2] = significativeFigures(PaN2Val, 3);
-        values[3] = significativeFigures(PaO2Val, 3);
+        values[1] = significativeFigures(pressureVal);
+        values[2] = significativeFigures(PaN2Val);
+        values[3] = significativeFigures(PaO2Val);
     }
 
     // Va voir si les valeurs sont dans les normes sinon, elle va afficher un
     // message d'alert
 
     public void checkValues() {
-        if (pressureVal >= 50) {
-            pressureWarning = "RETURN TO THE SURFACE PRESSURE TOO HIGH";
-            blinkingColors(pressureTxt, Color.RED);
-            soundSys.playSound();
-        } else if (pressureVal < 50) {
-            pressureWarning = "Normal pressure, just be careful..";
-            pressureTxt.setForeground(defaultColor);
-        }
         if (PaN2Val >= maxValN2) {
-            N2Warning = "RETURN TO THE SURFACE N2 IN BLOOD IS TOO HIGH";
+            N2Warning = "N2 Partial too high narcose may happen";
             blinkingColors(PaN2Txt, Color.red);
             soundSys.playSound();
         } else if (PaN2Val < maxValN2) {
@@ -216,7 +212,7 @@ public class WindowPanel extends JPanel implements Runnable {
         if (depthVal >= 1 && depthVal <= 27) {
             depthWarning = "You are using a normal nitrox mixture.";
             depthTxt.setForeground(new Color(98, 209, 24));
-        } else if (depthVal > 30 && depthVal <= 60) {
+        } else if (depthVal > 27 && depthVal <= 30) {
             depthWarning = "Be careful you are switching to a trimix gaz mixture";
             depthTxt.setForeground(Color.gray);
         } else if (depthVal > 60 && depthVal < 120) {
@@ -232,7 +228,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
     // Sauvegarde la liste de valeurs dans la liste des valeurs sauvegardé
     public void saveValues() {
-        savedValues.add(timerIterations, values);
+        savedValues.add(values);
     }
 
     // Début du Thread
@@ -257,7 +253,7 @@ public class WindowPanel extends JPanel implements Runnable {
             finalTime = currentTime;
 
             if (deltaT >= 1) {
-                frameCounter++;
+                frameCounter+=5;
                 deltaT--;
                 timer++;
             }
@@ -282,12 +278,11 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Afficher le texte des valeurs.
 
-        depthTxt.setText("<html><body><p>Depth :" + (int) significativeFigures(depthVal, 3) + "m " + depthWarning + "</p><br></body></html>");
+        depthTxt.setText("<html><body><p>Depth :" + (int) depthVal + "m " + depthWarning + "</p><br></body></html>");
         pressureTxt.setText(
-                "<html><body><p>Pressure :" + significativeFigures(pressureVal, 3) + " bar " + pressureWarning
-                        + " </p><br> </body></html>");
-        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaO2Val, 3) + " mmHg " + O2Warning + "</p><br></body></html>");
-        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val, 3) + " mmHg " + N2Warning + "</p><br></body></html>");
+                "<html><body><p>Pressure :" + significativeFigures(pressureVal) + " bar</p><br> </body></html>");
+        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaO2Val) + " mmHg " + "</p><br></body></html>");
+        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val) + " mmHg " + N2Warning + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -311,8 +306,9 @@ public class WindowPanel extends JPanel implements Runnable {
         return imageIcon;
     }
 
-    public double significativeFigures(double val, int fig){
-        return Math.round((val*100)/100);
+    public double significativeFigures(double val){
+        double format = Double.parseDouble(String.format("%.3f", val));
+        return format;
     }
 
 
