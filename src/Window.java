@@ -13,7 +13,7 @@ public class Window extends JFrame{
         this.add(wp); // Ajouter le panel à la fenêtre.
         this.setVisible(true);
 
-        this.pack(); // Affichage de la fenêtre.
+
     }
 
 

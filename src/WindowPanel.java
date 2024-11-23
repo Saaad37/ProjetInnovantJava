@@ -1,14 +1,9 @@
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.awt.geom.Path2D;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
@@ -28,12 +23,15 @@ public class WindowPanel extends JPanel implements Runnable {
     final double g = 9.81f; // m/s^2 ou N/Kg
     
     final String alarmPath = "/assets/alarm.wav";
+    boolean alarmRunning;
     
     double pressureVal;
     double pressureValPasc;
     double PaN2Val;
     double PaO2Val;
     double depthVal;
+
+    int frameCounter;
 
     // TODO Faire un graphe des valeurs depuis le debut du programme
 
@@ -45,16 +43,19 @@ public class WindowPanel extends JPanel implements Runnable {
 
     double maxValN2 = (4 * XN2) * 750;
 
-    Clip audio;
-    Button startButton = new Button(new Rectangle(190, 500, 80, 35), "Start");
-    Button endButton = new Button(new Rectangle(400, 500, 80, 35), "Pause");
+    SoundSystem soundSys = new SoundSystem(alarmPath);
+
+    Button startButton = new Button(new Rectangle(75, 500, 80, 35), "Start");
+    Button stopButton = new Button(new Rectangle(275, 500, 80, 35), "Stop");
+    Button pauseButton = new Button(new Rectangle(475, 500, 80, 35), "Pause");
+
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
                                 // valeurs au hasard
     Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
-    double[] values = new double[4]; // Création d'une liste qui va contenir les valeurs
-    double[][] savedValues = new double[7200][4]; // Création d'une liste qui contient une liste, Elle va sauvegarder les
-                                                // valeurs
+    Double[] values = new Double[4]; // Création d'une liste qui va contenir les valeurs
+    ArrayList<Double[]> savedValues = new ArrayList<Double[]>(7200); // Création d'une liste qui contient une liste, Elle va sauvegarder les
+                                                                // valeurs
     // la liste savedValues va ressembler à ça [[], [], [], ...]
 
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
@@ -93,15 +94,26 @@ public class WindowPanel extends JPanel implements Runnable {
 
         startButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e){
-            startThread();
+            if(windowThread == null){
+                startThread();
+            }
         }
         });
 
-        endButton.addActionListener(new ActionListener() {
+        pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 stopThread();
             }
         });
+
+        stopButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                stopThread();
+                resetValues();
+            }
+        });
+
+        frameCounter = 0;
 
         pressureTxt.setFont(font);
         PaN2Txt.setFont(font);
@@ -140,7 +152,8 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(depthTxt);
         this.add(savedText);
         this.add(startButton);
-        this.add(endButton);
+        this.add(pauseButton);
+        this.add(stopButton);
     }
 
     // Commencer le thread
@@ -157,9 +170,17 @@ public class WindowPanel extends JPanel implements Runnable {
     // Au début du programme il va choisir une valeur aléatoire puis va choisir des
     // variables au alentour de la valeur choisis précedemment
 
+    public void resetValues(){
+        depthVal = 0;
+        savedValues.clear();
+        for(int i = 0;i != values.length; i++){
+            values[i] = (double) 0;
+        }
+    }
+
     public void assignValues() {
         pressureValPasc = P0Pasc + (rhoSaltedWater * g * depthVal); // Pa
-        pressureVal = pressureValPasc * (float) Math.pow(10, -5); // bar
+        pressureVal = pressureValPasc * Math.pow(10, -5); // bar
         PaN2Val = (pressureValPasc /133) * XN2; // mmHg
         PaO2Val = (pressureValPasc /133) * XO2; // mmHg
         depthVal++;
@@ -178,23 +199,21 @@ public class WindowPanel extends JPanel implements Runnable {
     public void checkValues() {
         if (pressureVal >= 50) {
             pressureWarning = "RETURN TO THE SURFACE PRESSURE TOO HIGH";
-            blinkingColors(pressureTxt);
-            playSound(alarmPath);
+            blinkingColors(pressureTxt, Color.RED);
+            soundSys.playSound();
         } else if (pressureVal < 50) {
             pressureWarning = "Normal pressure, just be careful..";
             pressureTxt.setForeground(defaultColor);
-            stopSound(alarmPath);
         }
         if (PaN2Val >= maxValN2) {
             N2Warning = "RETURN TO THE SURFACE N2 IN BLOOD IS TOO HIGH";
-            blinkingColors(PaN2Txt);
-            playSound(alarmPath);
+            blinkingColors(PaN2Txt, Color.red);
+            soundSys.playSound();
         } else if (PaN2Val < maxValN2) {
             N2Warning = "Normal N2 Partial Pression";
             PaN2Txt.setForeground(defaultColor);
-            stopSound(alarmPath);
         }
-        if (depthVal >= 1 && depthVal <= 30) {
+        if (depthVal >= 1 && depthVal <= 27) {
             depthWarning = "You are using a normal nitrox mixture.";
             depthTxt.setForeground(new Color(98, 209, 24));
         } else if (depthVal > 30 && depthVal <= 60) {
@@ -202,14 +221,18 @@ public class WindowPanel extends JPanel implements Runnable {
             depthTxt.setForeground(Color.gray);
         } else if (depthVal > 60 && depthVal < 120) {
             depthWarning = "Be careful you are not using a normal gaz mixture";
-            blinkingColors(depthTxt);
+            blinkingColors(depthTxt, Color.RED);
+        }
+
+        if(PaN2Val < maxValN2 && pressureVal < 50 && depthVal < 120){
+            soundSys.stopSound();
         }
 
     }
 
     // Sauvegarde la liste de valeurs dans la liste des valeurs sauvegardé
     public void saveValues() {
-        savedValues[timerIterations] = values;
+        savedValues.add(timerIterations, values);
     }
 
     // Début du Thread
@@ -234,6 +257,7 @@ public class WindowPanel extends JPanel implements Runnable {
             finalTime = currentTime;
 
             if (deltaT >= 1) {
+                frameCounter++;
                 deltaT--;
                 timer++;
             }
@@ -251,7 +275,6 @@ public class WindowPanel extends JPanel implements Runnable {
                 timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
                 timer = 0;
             }
-
         }
     }
 
@@ -263,8 +286,8 @@ public class WindowPanel extends JPanel implements Runnable {
         pressureTxt.setText(
                 "<html><body><p>Pressure :" + significativeFigures(pressureVal, 3) + " bar " + pressureWarning
                         + " </p><br> </body></html>");
-        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaN2Val, 3) + " mmHg " + O2Warning + "</p><br></body></html>");
-        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaO2Val, 3) + " mmHg " + N2Warning + "</p><br></body></html>");
+        PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaO2Val, 3) + " mmHg " + O2Warning + "</p><br></body></html>");
+        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val, 3) + " mmHg " + N2Warning + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -273,11 +296,11 @@ public class WindowPanel extends JPanel implements Runnable {
     // Afficher les valeurs de la seconde d'avant ssi plus d'une seconde est passé
     // depuis le début du programme
     public void showSavedValues() {
-        if (timerIterations >= 1) {
-            savedText.setText("Profondeur: " + savedValues[timerIterations - 1][0] + " m " +
-                    "Pression " + savedValues[timerIterations - 1][1] + " bar " +
-                    "PaN2: " + savedValues[timerIterations - 1][2] + " Pa" +
-                    " PaO2: " + savedValues[timerIterations - 1][3] + " Pa");
+        if (timerIterations >= 1 && windowThread != null) {
+            savedText.setText("Profondeur: " + savedValues.get(timerIterations - 1)[0] + " m " +
+                    "Pression " + savedValues.get(timerIterations - 1)[1] + " bar " +
+                    "PaN2: " + savedValues.get(timerIterations - 1)[2] + " Pa" +
+                    " PaO2: " + savedValues.get(timerIterations - 1)[3] + " Pa");
         }
     }
 
@@ -292,40 +315,14 @@ public class WindowPanel extends JPanel implements Runnable {
         return Math.round((val*100)/100);
     }
 
-    public void playSound(String path){
-        try{
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
-            audio = AudioSystem.getClip();
-            audio.open(audioStream);
-            audio.loop(Clip.LOOP_CONTINUOUSLY);
-        }
-        catch(UnsupportedAudioFileException| LineUnavailableException | IOException e){
-            System.out.println("Error Occured...");
-            e.printStackTrace();
-        }
-    }
 
-    public void stopSound(String path){
-       try{
-        AudioInputStream AIS = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
-        audio = AudioSystem.getClip();
-        audio.open(AIS);
-        if(audio.isRunning()){
-            audio.stop();
-            audio.close();
-        }
-       }catch(LineUnavailableException | UnsupportedAudioFileException | IOException e){
-        e.printStackTrace();
-       }
-    }
-
-
-    public void blinkingColors(Component comp){
-        if((timerIterations/interval)%2 == 0){
-            comp.setForeground(Color.red);
+    public void blinkingColors(Component comp, Color color){
+        if((frameCounter/20)%2 == 0){
+            comp.setForeground(color);
         }else{
             comp.setForeground(defaultColor);
         }
     }
-
 }
+
+
