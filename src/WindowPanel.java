@@ -215,10 +215,14 @@ public class WindowPanel extends JPanel implements Runnable {
         } else if (depthVal > 27 && depthVal <= 30) {
             depthWarning = "Be careful you are switching to a trimix gaz mixture";
             depthTxt.setForeground(Color.gray);
-        } else if (depthVal > 60 && depthVal < 120) {
-            depthWarning = "Be careful you are not using a normal gaz mixture";
+        } else if (depthVal > 30 && depthVal <= 60) {
+            depthWarning = "You will be using a Heliox gaz mixture";
             blinkingColors(depthTxt, Color.RED);
+        }else if(depthVal > 60 && depthVal <= 120){
+            depthWarning = "Be careful you aren't using any normal mixture";
+            blinkingColors(depthTxt, Color.YELLOW);
         }
+
 
         if(PaN2Val < maxValN2 && pressureVal < 50 && depthVal < 120){
             soundSys.stopSound();
