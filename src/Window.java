@@ -12,8 +12,6 @@ public class Window extends JFrame{
         this.setResizable(false);
         this.add(wp); // Ajouter le panel à la fenêtre.
         this.setVisible(true);
-
-
     }
 
 

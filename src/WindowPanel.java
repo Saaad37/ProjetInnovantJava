@@ -56,7 +56,7 @@ public class WindowPanel extends JPanel implements Runnable {
                                 // valeurs au hasard
     Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
     Double[] values = new Double[4]; // Création d'une liste qui va contenir les valeurs
-    ArrayList<Double[]> savedValues = new ArrayList<Double[]>(7200); // Création d'une liste qui contient une liste, Elle va sauvegarder les
+    ArrayList<Double[]> savedValues = new ArrayList<Double[]>(); // Création d'une liste qui contient une liste, Elle va sauvegarder les
                                                                 // valeurs
     // la liste savedValues va ressembler à ça [[], [], [], ...]
 
