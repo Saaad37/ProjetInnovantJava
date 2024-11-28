@@ -2,8 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Path2D;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -19,7 +19,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
     final double XO2 = 0.2f; // %
     final double XN2 = 0.8f; // %
-    final double P0 = 1.013f; // mmHg
+    final double P0 = 1.013f; // bar
     int P0Pasc = 101325;
     final int rhoSaltedWater = 1025; // kg/m3
     final double g = 9.81f; // m/s^2 ou N/Kg
@@ -311,8 +311,9 @@ public class WindowPanel extends JPanel implements Runnable {
     }
 
     public double significativeFigures(double val){
-        double format = Double.parseDouble(String.format("%.3f", val));
-        return format;
+        BigDecimal bd = new BigDecimal(val);
+        bd = bd.round(new MathContext(3));
+        return bd.doubleValue();
     }
 
 

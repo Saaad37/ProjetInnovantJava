@@ -9,11 +9,12 @@ public class Graph extends JPanel {
     double maxVal;
     double minVal;
     ArrayList<Point> arr;
-    ArrayList<Double> vals;
+    ArrayList<Double[]> vals;
     int index;
 
     int marg = 30;
-    int labelMarg = 25;
+    int labelMarg = 15;
+    int totalMarg = marg + labelMarg;
     Color lineColor = new Color(44,102,230,180);
     Color pointColor = new Color(100,100, 100, 180);
     Color gridColor = new Color(200,200,200,200);
@@ -36,8 +37,9 @@ public class Graph extends JPanel {
     }
 */
 
-    public Graph(ArrayList<Double> vals){
-        this.vals = vals;
+    public Graph(ArrayList<Double[]> val, int index){
+            this.index = index;
+            this.vals = val;
     }
     @Override
     public void paintComponents(Graphics g){
@@ -51,7 +53,7 @@ public class Graph extends JPanel {
         ArrayList<Point> graphPoints  = new ArrayList<Point>();
         for(int i =0;i < vals.size();i++){
             int x1 = (int) (i*xScale + marg + labelMarg);
-            int y1 = (int) ((int) ((getMax() - vals.get(i))) * yScale + marg);
+            int y1 = (int) ((int) ((getMax() - vals.get(i)[index])) * yScale + marg);
             graphPoints.add(new Point(x1,y1));
         }
 
@@ -144,25 +146,26 @@ public class Graph extends JPanel {
         return minVal;
     }
 
-    public void setScores(ArrayList<Double> vals){
+    public void setScores(ArrayList<Double[]> vals){
         this.vals = vals;
         invalidate();
         this.repaint();
     }
 
-    public ArrayList<Double> getVals(){
+    public ArrayList<Double[]> getVals(){
         return vals;
     }
 
     public static void createAndShowGui(){
-        ArrayList<Double> val = new ArrayList<>();
+        ArrayList<Double[]> val = new ArrayList<>();
         Random rand = new Random();
         int maxDataPoints = 40;
         int maxVal = 10;
         for(int i = 0; i < maxDataPoints; i++){
-            val.add((double) rand.nextDouble() * maxVal);
+            val.add(new Double[] {(double) rand.nextDouble() * maxVal, (double) rand.nextDouble() * maxVal,
+                 (double) rand.nextDouble() * maxVal, (double) rand.nextDouble() * maxVal});
         }
-        Graph panel = new Graph(val);
+        Graph panel = new Graph(val, 0);
         panel.setPreferredSize(new Dimension(800, 600));
         JFrame frame = new JFrame("Graph");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

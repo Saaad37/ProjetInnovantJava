@@ -1,9 +1,12 @@
 public class Main {
     public static void main(String[] args) {
-        GraphManager g = new GraphManager();
+        // GraphManager g = new GraphManager();
+        WindowPanel wp = new WindowPanel();
         Window window = new Window();
 
-        g.pack(); // Affichage du graphe.
+        window.add(wp); // Ajout du panel à la fenêtre.
+
+        // g.pack(); // Affichage du graphe.
         window.pack(); // Affichage de la fenêtre.
     }
 }
