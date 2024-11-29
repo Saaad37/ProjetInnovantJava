@@ -1,3 +1,7 @@
+package main;
+
+import components.Window;
+
 public class Main {
     public static void main(String[] args) {
         // GraphManager g = new GraphManager();

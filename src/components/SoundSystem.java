@@ -1,3 +1,5 @@
+package components;
+
 import javax.sound.sampled.*;
 import java.io.IOException;
 
@@ -17,16 +19,17 @@ public class SoundSystem {
         }
     }
 
-    public void playSound(){
+    public void playSound() {
         try {
-            if(!this.audio.isOpen()) audio.open(this.AIS);
-        }catch (LineUnavailableException | IOException e) {
+            if (!this.audio.isOpen())
+                audio.open(this.AIS);
+        } catch (LineUnavailableException | IOException e) {
             e.printStackTrace();
         }
         audio.loop(1);
     }
 
-    public void stopSound(){
+    public void stopSound() {
         audio.stop();
         audio.close();
     }

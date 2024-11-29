@@ -1,4 +1,9 @@
+package main;
 import javax.swing.*;
+
+import components.Button;
+import components.SoundSystem;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
