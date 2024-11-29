@@ -6,9 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Graph extends JPanel implements Runnable {
-
-    Window w;
+public class Graph extends JPanel {
 
     private final int winHeight = 500;
     private final int winWidth = 500;
@@ -31,8 +29,6 @@ public class Graph extends JPanel implements Runnable {
     String labelAtY;
     String labelAtX;
 
-    Thread thread;
-
     public Graph(String labelAtX, String labelAtY, ArrayList<Double[]> vals, int index) {
         this.labelAtX = labelAtX;
         this.labelAtY = labelAtY;
@@ -47,11 +43,6 @@ public class Graph extends JPanel implements Runnable {
         for (int i = 0; i < vals.size(); i++) {
             points.add(new Point(Integer.parseInt(vals.get(i)[index].toString()), i));
         }
-    }
-
-    public void startThread() {
-        thread = new Thread();
-        thread.start();
     }
 
     @Override
@@ -87,28 +78,6 @@ public class Graph extends JPanel implements Runnable {
             g2.draw((Shape) p);
         }
 
-    }
-
-    @Override
-    public void run() {
-
-        double deltaT = 0;
-        long finalTime = System.nanoTime();
-        long currentTime = 0;
-        int interval = 1000000000 / 60;
-
-        while (thread != null) {
-
-            currentTime = System.nanoTime();
-
-            deltaT += (currentTime - finalTime) / interval;
-            finalTime = currentTime;
-
-            if (deltaT >= 1) {
-                repaint();
-            }
-
-        }
     }
 
     public ArrayList<Point> getPoints() {

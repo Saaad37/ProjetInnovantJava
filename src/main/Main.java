@@ -1,5 +1,7 @@
 package main;
 
+import javax.swing.SwingUtilities;
+
 import components.Graph;
 import components.Window;
 
@@ -13,7 +15,11 @@ public class Main {
         winGraph.add(g);
         window.add(wp); // Ajout du panel à la fenêtre.
 
-        g.startThread();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                g.repaint();
+            }
+        });
 
         winGraph.pack();
         window.pack(); // Affichage de la fenêtre.
