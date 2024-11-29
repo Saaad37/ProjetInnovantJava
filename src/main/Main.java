@@ -10,7 +10,6 @@ public class Main {
         Window winGraph = new Window();
         Graph g = new Graph("t", "Pressure", wp.getSavedValues(), 1);
 
-
         winGraph.add(g);
         window.add(wp); // Ajout du panel à la fenêtre.
 
