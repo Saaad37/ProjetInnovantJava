@@ -2,8 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Path2D;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -23,10 +23,10 @@ public class WindowPanel extends JPanel implements Runnable {
     int P0Pasc = 101325;
     final int rhoSaltedWater = 1025; // kg/m3
     final double g = 9.81f; // m/s^2 ou N/Kg
-    
+
     final String alarmPath = "/assets/alarm.wav";
     boolean alarmRunning;
-    
+
     double pressureVal;
     double pressureValPasc;
     double PaN2Val;
@@ -41,8 +41,6 @@ public class WindowPanel extends JPanel implements Runnable {
      * Initialisation des variables.
      */
 
-
-
     double maxValN2 = (4 * XN2) * 750;
 
     SoundSystem soundSys = new SoundSystem(alarmPath);
@@ -56,15 +54,17 @@ public class WindowPanel extends JPanel implements Runnable {
                                 // valeurs au hasard
     Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
     Double[] values = new Double[4]; // Création d'une liste qui va contenir les valeurs
-    ArrayList<Double[]> savedValues = new ArrayList<Double[]>(7200); // Création d'une liste qui contient une liste, Elle va sauvegarder les
-                                                                // valeurs
+    ArrayList<Double[]> savedValues = new ArrayList<Double[]>(7200); // Création d'une liste qui contient une liste,
+                                                                     // Elle va sauvegarder les
+    // valeurs
     // la liste savedValues va ressembler à ça [[], [], [], ...]
 
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
                          // l'index des valeurs sauvegardé
     Color bgColor = new Color(34, 48, 97);
     Color defaultColor = Color.WHITE;
-    ImageIcon subroticIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("./assets/subrotic.jpg")));
+    ImageIcon subroticIcon = new ImageIcon(
+            Objects.requireNonNull(this.getClass().getResource("./assets/subrotic.jpg")));
 
     /*
      * Initialisation des texte qui vont apparaître sur la fenêtre
@@ -93,15 +93,15 @@ public class WindowPanel extends JPanel implements Runnable {
         // Appliquer la police a tous les textes
 
         startButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e){
-            if(windowThread == null){
-                startThread();
+            public void actionPerformed(ActionEvent e) {
+                if (windowThread == null) {
+                    startThread();
+                }
             }
-        }
         });
 
         pauseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 stopThread();
             }
         });
@@ -163,7 +163,7 @@ public class WindowPanel extends JPanel implements Runnable {
         windowThread.start();
     }
 
-    public void stopThread(){
+    public void stopThread() {
         windowThread = null;
         soundSys.stopSound();
     }
@@ -171,7 +171,7 @@ public class WindowPanel extends JPanel implements Runnable {
     // Au début du programme il va choisir une valeur aléatoire puis va choisir des
     // variables au alentour de la valeur choisis précedemment
 
-    public void resetValues(){
+    public void resetValues() {
         depthVal = 0;
         savedValues.clear();
         Arrays.fill(values, (double) 0);
@@ -185,8 +185,8 @@ public class WindowPanel extends JPanel implements Runnable {
     public void assignValues() {
         pressureValPasc = P0Pasc + (rhoSaltedWater * g * depthVal); // Pa
         pressureVal = pressureValPasc * Math.pow(10, -5); // bar
-        PaN2Val = (pressureValPasc /133) * XN2; // mmHg
-        PaO2Val = (pressureValPasc /133) * XO2; // mmHg
+        PaN2Val = (pressureValPasc / 133) * XN2; // mmHg
+        PaO2Val = (pressureValPasc / 133) * XO2; // mmHg
         depthVal++;
 
         // Assigner ces valeurs à la liste des valeurs
@@ -220,7 +220,7 @@ public class WindowPanel extends JPanel implements Runnable {
             blinkingColors(depthTxt, Color.RED);
         }
 
-        if(PaN2Val < maxValN2 && pressureVal < 50 && depthVal < 120){
+        if (PaN2Val < maxValN2 && pressureVal < 50 && depthVal < 120) {
             soundSys.stopSound();
         }
 
@@ -253,7 +253,7 @@ public class WindowPanel extends JPanel implements Runnable {
             finalTime = currentTime;
 
             if (deltaT >= 1) {
-                frameCounter+=5;
+                frameCounter += 5;
                 deltaT--;
                 timer++;
             }
@@ -282,7 +282,8 @@ public class WindowPanel extends JPanel implements Runnable {
         pressureTxt.setText(
                 "<html><body><p>Pressure :" + significativeFigures(pressureVal) + " bar</p><br> </body></html>");
         PaO2Txt.setText("<html><body><p>PaO2 :" + significativeFigures(PaO2Val) + " mmHg " + "</p><br></body></html>");
-        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val) + " mmHg " + N2Warning + "</p><br></body></html>");
+        PaN2Txt.setText("<html><body><p>PaN2 :" + significativeFigures(PaN2Val) + " mmHg " + N2Warning
+                + "</p><br></body></html>");
 
         // **L'utilisation du html afin faire un saut de ligne.
 
@@ -306,19 +307,17 @@ public class WindowPanel extends JPanel implements Runnable {
         return imageIcon;
     }
 
-    public double significativeFigures(double val){
-        double format = Double.parseDouble(String.format("%.3f", val));
-        return format;
+    public double significativeFigures(double val) {
+        BigDecimal bd = new BigDecimal(val);
+        bd = bd.round(new MathContext(3));
+        return bd.doubleValue();
     }
 
-
-    public void blinkingColors(Component comp, Color color){
-        if((frameCounter/20)%2 == 0){
+    public void blinkingColors(Component comp, Color color) {
+        if ((frameCounter / 20) % 2 == 0) {
             comp.setForeground(color);
-        }else{
+        } else {
             comp.setForeground(defaultColor);
         }
     }
 }
-
-

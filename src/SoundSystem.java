@@ -10,23 +10,22 @@ public class SoundSystem {
         try {
             AIS = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
             audio = AudioSystem.getClip();
-            this.AIS = AIS;
-            this.audio = audio;
         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void playSound(){
+    public void playSound() {
         try {
-            if(!this.audio.isOpen()) audio.open(this.AIS);
-        }catch (LineUnavailableException | IOException e) {
+            if (!this.audio.isOpen())
+                audio.open(this.AIS);
+        } catch (LineUnavailableException | IOException e) {
             e.printStackTrace();
         }
         audio.loop(1);
     }
 
-    public void stopSound(){
+    public void stopSound() {
         audio.stop();
         audio.close();
     }
