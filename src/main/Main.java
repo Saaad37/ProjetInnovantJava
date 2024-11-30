@@ -2,7 +2,7 @@ package main;
 
 import javax.swing.SwingUtilities;
 
-import components.Graph;
+import components.CG;
 import components.Window;
 
 public class Main {
@@ -10,16 +10,17 @@ public class Main {
         WindowPanel wp = new WindowPanel();
         Window window = new Window();
         Window winGraph = new Window();
-        Graph g = new Graph("t", "Pressure", wp.getSavedValues(), 1);
-
-        winGraph.add(g);
-        window.add(wp); // Ajout du panel à la fenêtre.
+        CG g = new CG(wp.getSavedValues(), 1, winGraph);
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                g.repaint();
+                g.updateDataset();
             }
         });
+
+        winGraph.add(g);
+        winGraph.setResizable(true);
+        window.add(wp);
 
         winGraph.pack();
         window.pack(); // Affichage de la fenêtre.
