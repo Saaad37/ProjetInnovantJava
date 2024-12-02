@@ -14,7 +14,7 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                g.updateDataset();
+                g.updateUI();
             }
         });
 

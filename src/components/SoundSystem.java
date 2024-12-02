@@ -1,6 +1,8 @@
 package components;
 
 import javax.sound.sampled.*;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
 
 public class SoundSystem {
@@ -10,25 +12,25 @@ public class SoundSystem {
 
     public SoundSystem(String path) {
         try {
-            AIS = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
-            audio = AudioSystem.getClip();
-            this.AIS = AIS;
-            this.audio = audio;
+            this.AIS = AudioSystem
+                    .getAudioInputStream(new BufferedInputStream(this.getClass().getResourceAsStream(path)));
+            this.audio = AudioSystem.getClip();
         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void playSound(){
+    public void playSound() {
         try {
-            if(!this.audio.isOpen()) audio.open(this.AIS);
-        }catch (LineUnavailableException | IOException e) {
+            if (!this.audio.isOpen())
+                this.audio.open(this.AIS);
+        } catch (LineUnavailableException | IOException e) {
             e.printStackTrace();
         }
         audio.loop(1);
     }
 
-    public void stopSound(){
+    public void stopSound() {
         audio.stop();
         audio.close();
     }

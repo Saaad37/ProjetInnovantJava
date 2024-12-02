@@ -5,9 +5,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.Dataset;
-import org.jfree.data.xy.XYDataset;
-
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -35,9 +32,17 @@ public class CG extends JPanel {
         frame.setContentPane(chartPanel);
     }
 
+    public void updateUI() {
+        JFreeChart chart = createChart(updateDataset());
+        ChartPanel chartPanel = new ChartPanel(chart);
+        frame.setContentPane(chartPanel);
+    }
+
     public DefaultCategoryDataset updateDataset() {
-        for (int i = 0; i < vals.size(); i++) {
-            dataset.addValue(vals.get(i)[index], "1", "1");
+        if (!vals.isEmpty()) {
+            for (int i = 0; i < vals.size(); i++) {
+                dataset.addValue(vals.get(i)[index], "1", "1");
+            }
         }
         return dataset;
     }
