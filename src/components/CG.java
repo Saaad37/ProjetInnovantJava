@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 public class CG extends JPanel {
 
-    ArrayList<Double[]> vals;
+    ArrayList<Double[]> vals = new ArrayList<>();
     int index;
     JFrame frame;
     DefaultCategoryDataset dataset;
