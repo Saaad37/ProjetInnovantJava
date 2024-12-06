@@ -1,47 +1,68 @@
 package components;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
 import java.util.ArrayList;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.ui.ApplicationFrame;
+import org.jfree.data.general.SeriesException;
+import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.chart.ui.ApplicationFrame;
 
 public class XYC extends ApplicationFrame {
 
-    final static String title = "Surveillance Graph";
     ArrayList<Double[]> vals;
+    JFreeChart chart;
+    ChartPanel chartPanel;
 
-    public XYC(ArrayList<Double[]> vals) {
-
+    public XYC(final String title, ArrayList<Double[]> vals) {
         super(title);
-        JFreeChart xyChart = ChartFactory.createXYLineChart("Suivi", "t", "Pressure", createDataset(),
-                PlotOrientation.HORIZONTAL, true, true, false);
-        ChartPanel panel = new ChartPanel(xyChart);
-        panel.setPreferredSize(new Dimension(500, 500));
-        final XYPlot plot = xyChart.getXYPlot();
-
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesPaint(0, Color.red);
-        renderer.setSeriesPaint(1, Color.GREEN);
-        renderer.setSeriesPaint(2, Color.YELLOW);
-        renderer.setSeriesPaint(3, Color.MAGENTA);
-        renderer.setSeriesStroke(0, new BasicStroke(4.0f));
-        renderer.setSeriesStroke(1, new BasicStroke(4.0f));
-        renderer.setSeriesStroke(2, new BasicStroke(4.0f));
-        renderer.setSeriesStroke(3, new BasicStroke(4.0f));
+        this.vals = vals;
+        XYDataset dataset = createDataset();
+        chart = createChart(dataset);
+        chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(560, 370));
+        chartPanel.setMouseZoomable(true, false);
+        setContentPane(chartPanel);
     }
 
     public XYDataset createDataset() {
-        return null;
-        // TODO
+        TimeSeries series = new TimeSeries("Random Data");
+        Second current = new Second();
+
+        for (int i = 0; i < vals.size() - 1; i++) {
+            double val = vals.get(i)[1];
+            try {
+                series.add(current, Double.valueOf(val));
+                current = (Second) current.next();
+            } catch (SeriesException e) {
+                System.err.println("Error adding to series");
+            }
+        }
+
+        return new TimeSeriesCollection(series);
     }
 
+    public JFreeChart createChart(final XYDataset dataset) {
+        return ChartFactory.createTimeSeriesChart(
+                "Computing Test",
+                "Seconds",
+                "Value",
+                dataset,
+                false,
+                true,
+                false);
+    }
+
+    public void updateUI() {
+        chartPanel.removeAll();
+        XYDataset dataset = createDataset();
+        chart = createChart(dataset);
+        chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(560, 370));
+        setContentPane(chartPanel);
+        chartPanel.repaint();
+    }
 }

@@ -29,6 +29,9 @@ public class WindowPanel extends JPanel implements Runnable {
     final int rhoSaltedWater = 1025; // kg/m3
     final double g = 9.81f; // m/s^2 ou N/Kg
 
+    boolean paused = true;
+    boolean stopped = false;
+
     final String alarmPath = "/assets/alarm.wav";
     boolean alarmRunning;
 
@@ -100,6 +103,8 @@ public class WindowPanel extends JPanel implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 if (windowThread == null) {
                     startThread();
+                    paused = false;
+                    stopped = false;
                 }
             }
         });
@@ -107,6 +112,7 @@ public class WindowPanel extends JPanel implements Runnable {
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 stopThread();
+                paused = true;
             }
         });
 
@@ -114,6 +120,8 @@ public class WindowPanel extends JPanel implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 stopThread();
                 resetValues();
+                stopped = true;
+                paused = false;
             }
         });
 
@@ -329,7 +337,16 @@ public class WindowPanel extends JPanel implements Runnable {
         }
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public boolean isStopped() {
+        return stopped;
+    }
+
     public ArrayList<Double[]> getSavedValues() {
         return savedValues;
     }
+
 }
