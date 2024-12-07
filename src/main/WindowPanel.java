@@ -214,11 +214,11 @@ public class WindowPanel extends JPanel implements Runnable {
     // message d'alert
 
     private void checkValues() {
-        if (PaN2Val >= maxValN2) {
+        if (PaN2Val >= maxValN2 - 375) {
             N2Warning = "N2 Partial too high narcose may happen";
             blinkingColors(PaN2Txt, Color.red);
             soundSys.playSound();
-        } else if (PaN2Val < maxValN2) {
+        } else if (PaN2Val < maxValN2 - 375) {
             N2Warning = "Normal N2 Partial Pression";
             PaN2Txt.setForeground(defaultColor);
         }
@@ -230,13 +230,13 @@ public class WindowPanel extends JPanel implements Runnable {
             depthTxt.setForeground(Color.gray);
         } else if (depthVal > 30 && depthVal <= 60) {
             depthWarning = "You will be using a Heliox gaz mixture";
-            blinkingColors(depthTxt, Color.RED);
+            depthTxt.setForeground(Color.GREEN);
         } else if (depthVal > 60 && depthVal <= 120) {
             depthWarning = "Be careful you aren't using any normal mixture";
-            blinkingColors(depthTxt, Color.YELLOW);
+            depthTxt.setForeground(Color.yellow);
         }
 
-        if (PaN2Val < maxValN2 && pressureVal < 50 && depthVal < 120) {
+        if (PaN2Val < maxValN2 - 375 && pressureVal < 50 && depthVal < 120) {
             soundSys.stopSound();
         }
 
