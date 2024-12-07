@@ -26,12 +26,10 @@ public class WindowPanel extends JPanel implements Runnable {
     final double XO2 = 0.2f; // %
     final double XN2 = 0.8f; // %
     final double P0 = 1.013f; // bar
-    int P0Pasc = 101325;
+    final int P0Pasc = 101325;
     final int rhoSaltedWater = 1025; // kg/m3
     final double g = 9.81f; // m/s^2 ou N/Kg
-
     final String alarmPath = "/assets/alarm.wav";
-    boolean alarmRunning;
 
     double pressureVal;
     double pressureValPasc;
@@ -66,7 +64,8 @@ public class WindowPanel extends JPanel implements Runnable {
     // la liste savedValues va ressembler à ça [[], [], [], ...]
 
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
-                         // l'index des valeurs sauvegardé
+    int minPassed;
+    // l'index des valeurs sauvegardé
     Color bgColor = new Color(34, 48, 97);
     Color defaultColor = Color.WHITE;
     ImageIcon subroticIcon = new ImageIcon(
@@ -82,9 +81,11 @@ public class WindowPanel extends JPanel implements Runnable {
     JLabel depthTxt = new JLabel();
     JLabel savedText = new JLabel();
     JLabel subroticLogo = new JLabel();
+    JLabel timerTxt = new JLabel();
 
     String N2Warning;
     String depthWarning;
+    String timerString;
 
     // Variable qui servent a savoir quand une seconde passe
 
@@ -126,12 +127,14 @@ public class WindowPanel extends JPanel implements Runnable {
         PaO2Txt.setFont(font);
         depthTxt.setFont(font);
         savedText.setFont(font);
+        timerTxt.setFont(font);
         subroticLogo.setIcon(subroticIcon);
 
         pressureTxt.setForeground(defaultColor);
         PaN2Txt.setForeground(defaultColor);
         PaO2Txt.setForeground(defaultColor);
         depthTxt.setForeground(defaultColor);
+        timerTxt.setForeground(defaultColor);
         savedText.setForeground(defaultColor);
 
         // Donner un rectangle comme limite de textes
@@ -141,6 +144,7 @@ public class WindowPanel extends JPanel implements Runnable {
         depthTxt.setBounds(new Rectangle(50, 250, 720, 50));
         pressureTxt.setBounds(new Rectangle(50, 300, 720, 50));
         savedText.setBounds(new Rectangle(10, 425, 720, 50));
+        timerTxt.setBounds(new Rectangle(600, 10, 100, 50));
 
         subroticIcon.setImage(
                 resizeImage(subroticIcon, subroticLogo.getBounds().width, subroticLogo.getBounds().height).getImage());
@@ -157,6 +161,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(PaO2Txt);
         this.add(depthTxt);
         this.add(savedText);
+        this.add(timerTxt);
         this.add(startButton);
         this.add(pauseButton);
         this.add(stopButton);
@@ -164,12 +169,12 @@ public class WindowPanel extends JPanel implements Runnable {
 
     // Commencer le thread
 
-    public void startThread() {
+    private void startThread() {
         windowThread = new Thread(this);
         windowThread.start();
     }
 
-    public void stopThread() {
+    private void stopThread() {
         windowThread = null;
         soundSys.stopSound();
     }
@@ -177,18 +182,20 @@ public class WindowPanel extends JPanel implements Runnable {
     // Au début du programme il va choisir une valeur aléatoire puis va choisir des
     // variables au alentour de la valeur choisis précedemment
 
-    public void resetValues() {
+    private void resetValues() {
         depthVal = 0;
         savedValues.clear();
         Arrays.fill(values, (double) 0);
         timerIterations = 0;
+        minPassed = 0;
         timer = 0;
         checkValues();
         displayValues();
+        displayTimer();
         System.out.println(savedValues.toString());
     }
 
-    public void assignValues() {
+    private void assignValues() {
         pressureValPasc = P0Pasc + (rhoSaltedWater * g * depthVal); // Pa
         pressureVal = pressureValPasc * Math.pow(10, -5); // bar
         PaN2Val = (pressureValPasc / 133) * XN2; // mmHg
@@ -206,7 +213,7 @@ public class WindowPanel extends JPanel implements Runnable {
     // Va voir si les valeurs sont dans les normes sinon, elle va afficher un
     // message d'alert
 
-    public void checkValues() {
+    private void checkValues() {
         if (PaN2Val >= maxValN2) {
             N2Warning = "N2 Partial too high narcose may happen";
             blinkingColors(PaN2Txt, Color.red);
@@ -236,7 +243,7 @@ public class WindowPanel extends JPanel implements Runnable {
     }
 
     // Sauvegarde la liste de valeurs dans la liste des valeurs sauvegardé
-    public void saveValues() {
+    private void saveValues() {
         savedValues.add(values);
     }
 
@@ -267,6 +274,7 @@ public class WindowPanel extends JPanel implements Runnable {
                 timer++;
             }
             if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
+                displayTimer();
                 showSavedValues(); // Afficher les valeurs de la seconde d'avant
                 assignValues(); // Assimiler de nouvelles valeurs
                 checkValues();
@@ -278,12 +286,22 @@ public class WindowPanel extends JPanel implements Runnable {
                 displayValues(); // Afficher les valeurs
                 saveValues(); // Sauvegarder les valeurs dans la liste des valeurs sauvegardées
                 timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
+                if (timerIterations % 60 == 0) {
+                    minPassed++;
+                }
                 timer = 0;
             }
         }
     }
 
-    public void displayValues() {
+    private void displayTimer() {
+        int secondsPassed = timerIterations;
+        timerString = Integer.toString(minPassed) + " min " + Integer.toString(secondsPassed - minPassed * 60) + " s";
+        timerTxt.setText(timerString);
+
+    }
+
+    private void displayValues() {
 
         // Afficher le texte des valeurs.
 
@@ -300,7 +318,8 @@ public class WindowPanel extends JPanel implements Runnable {
 
     // Afficher les valeurs de la seconde d'avant ssi plus d'une seconde est passé
     // depuis le début du programme
-    public void showSavedValues() {
+
+    private void showSavedValues() {
         if (timerIterations >= 1 && windowThread != null) {
             savedText.setText("Profondeur: " + savedValues.get(timerIterations - 1)[0] + " m " +
                     "Pression " + savedValues.get(timerIterations - 1)[1] + " bar " +
@@ -309,20 +328,20 @@ public class WindowPanel extends JPanel implements Runnable {
         }
     }
 
-    public ImageIcon resizeImage(ImageIcon imageIcon, int w, int h) {
+    private ImageIcon resizeImage(ImageIcon imageIcon, int w, int h) {
         Image image = imageIcon.getImage();
         Image newImage = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(newImage);
         return imageIcon;
     }
 
-    public double significativeFigures(double val) {
+    private double significativeFigures(double val) {
         BigDecimal bd = new BigDecimal(val);
         bd = bd.round(new MathContext(3));
         return bd.doubleValue();
     }
 
-    public void blinkingColors(Component comp, Color color) {
+    private void blinkingColors(Component comp, Color color) {
         if ((frameCounter / 20) % 2 == 0) {
             comp.setForeground(color);
         } else {
