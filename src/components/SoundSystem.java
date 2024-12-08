@@ -10,10 +10,8 @@ public class SoundSystem {
 
     public SoundSystem(String path) {
         try {
-            AIS = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
-            audio = AudioSystem.getClip();
-            this.AIS = AIS;
-            this.audio = audio;
+            this.AIS = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream(path));
+            this.audio = AudioSystem.getClip();
         } catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
             e.printStackTrace();
         }
