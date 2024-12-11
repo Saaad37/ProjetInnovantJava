@@ -12,9 +12,19 @@ SUIVI DU PROJET :
 
 1ère version:
 
-![image](https://github.com/user-attachments/assets/c8f31837-2317-42a9-b0c3-beb514446aa7)
+  ![image](https://github.com/user-attachments/assets/c8f31837-2317-42a9-b0c3-beb514446aa7)
+
+--------------------------------------------------------------------------------------------
 
 2éme version: 
 
-![image](https://github.com/user-attachments/assets/16717d36-5a56-49f1-8faf-67df0486d74e)
+  ![image](https://github.com/user-attachments/assets/16717d36-5a56-49f1-8faf-67df0486d74e)
+
+-------------------------------------------------------------------------------------------
+3éme version:
+
+  ![Screenshot from 2024-12-07 22-08-25](https://github.com/user-attachments/assets/146d095e-1f8b-4fe0-8db1-68786cb4aa05)
+
+
+  ![Screenshot from 2024-12-07 22-08-46](https://github.com/user-attachments/assets/1917ea68-b6df-4daa-ac81-421ceda4cce8)
 
