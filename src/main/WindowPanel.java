@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Random;
 
 public class WindowPanel extends JPanel implements Runnable {
@@ -42,6 +41,8 @@ public class WindowPanel extends JPanel implements Runnable {
 
     int frameCounter;
 
+    boolean testing;
+
     // TODO Faire un graphe des valeurs depuis le debut du programme
 
     /*
@@ -56,6 +57,7 @@ public class WindowPanel extends JPanel implements Runnable {
     Button startButton = new Button(new Rectangle((winWidth / 3) - 200 , 500, 80, 35), "Start");
     Button stopButton = new Button(new Rectangle(2 * (winWidth - 200) / 3, 500, 80, 35), "Stop");
     Button pauseButton = new Button(new Rectangle(winWidth - 200, 500, 80, 35), "Pause");
+    Button testingButton = new Button(new Rectangle(500, 480, 80, 35), "Start Test");
 
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
@@ -72,8 +74,7 @@ public class WindowPanel extends JPanel implements Runnable {
     // l'index des valeurs sauvegardé
     Color bgColor = new Color(34, 48, 97);
     Color defaultColor = Color.WHITE;
-    ImageIcon subroticIcon = new ImageIcon(
-            Objects.requireNonNull(this.getClass().getResource("/assets/subrotic.jpg")));
+    ImageIcon subroticIcon = new ImageIcon(this.getClass().getResource("/assets/subrotic.jpg"));
 
     /*
      * Initialisation des texte qui vont apparaître sur la fenêtre
@@ -102,6 +103,7 @@ public class WindowPanel extends JPanel implements Runnable {
     public WindowPanel() { // Constructeur.
 
         // Appliquer la police a tous les textes
+        testing = false;
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -121,6 +123,17 @@ public class WindowPanel extends JPanel implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 stopThread();
                 resetValues();
+            }
+        });
+
+        testingButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(testing && windowThread == null){
+                    testing = false;
+                }else if(!testing && windowThread == null){
+                    testing = true;
+                }
+
             }
         });
 
@@ -169,6 +182,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(startButton);
         this.add(pauseButton);
         this.add(stopButton);
+        this.add(testingButton);
     }
 
     // Commencer le thread
@@ -276,6 +290,11 @@ public class WindowPanel extends JPanel implements Runnable {
                 frameCounter += 5;
                 deltaT--;
                 timer++;
+                if(testing){
+                    testingButton.setText("Stop Testing");
+                }else{
+                    testingButton.setText("Start Testing");
+                }
             }
             if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
                 displayTimer();
