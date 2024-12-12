@@ -3,7 +3,9 @@ package main;
 import javax.swing.*;
 
 import components.Button;
+import components.ErrorDialogBox;
 import components.SoundSystem;
+import components.StopTestingDialog;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -62,11 +64,12 @@ public class WindowPanel extends JPanel implements Runnable {
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
                                 // valeurs au hasard
-    Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
+    final Font font = new Font("Helvetica", Font.PLAIN, 20); // Création d'une nouvelle police.
     Double[] values = new Double[4]; // Création d'une liste qui va contenir les valeurs
     ArrayList<Double[]> savedValues = new ArrayList<Double[]>(); // Création d'une liste qui contient une liste, Elle va
                                                                  // sauvegarder les
                                                                  // valeurs
+    ArrayList<Double> maxDepthTest = new ArrayList<>();
     // la liste savedValues va ressembler à ça [[], [], [], ...]
 
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
@@ -100,6 +103,8 @@ public class WindowPanel extends JPanel implements Runnable {
     long finalTime;
     double interval;
 
+    WindowPanel wp = this;
+
     public WindowPanel() { // Constructeur.
 
         // Appliquer la police a tous les textes
@@ -121,6 +126,10 @@ public class WindowPanel extends JPanel implements Runnable {
 
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(testing){
+                    maxDepthTest.add(savedValues.get(timerIterations)[0]);
+                    System.out.println(maxDepthTest.toString());
+                }
                 stopThread();
                 resetValues();
             }
@@ -128,10 +137,20 @@ public class WindowPanel extends JPanel implements Runnable {
 
         testingButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if(testing && windowThread == null){
+                if(windowThread != null ){
+                    ErrorDialogBox dialog = new ErrorDialogBox("Can't run tests now..");
+                    dialog.setVisible(true);
+                }
+                setTestingState();
+                if(testing && windowThread == null && maxDepthTest.isEmpty()){
                     testing = false;
                 }else if(!testing && windowThread == null){
+                    maxDepthTest.clear();
                     testing = true;
+                }else if(testing && windowThread == null && !maxDepthTest.isEmpty()){
+                    StopTestingDialog d = new StopTestingDialog("Do you want to lose your progession ?", wp);
+                    System.out.println(testing);
+                    d.setVisible(true);
                 }
 
             }
@@ -290,11 +309,6 @@ public class WindowPanel extends JPanel implements Runnable {
                 frameCounter += 5;
                 deltaT--;
                 timer++;
-                if(testing){
-                    testingButton.setText("Stop Testing");
-                }else{
-                    testingButton.setText("Start Testing");
-                }
             }
             if (timer >= 1000000000) { // Si la valeur timer est >= a 1sec
                 displayTimer();
@@ -372,7 +386,21 @@ public class WindowPanel extends JPanel implements Runnable {
         }
     }
 
+    private void setTestingState(){
+        if(testing){
+            testingButton.setText("Stop Testing");
+        }else{
+            testingButton.setText("Start Testing");
+        }
+    }
 
+    public ArrayList<Double> getMaxDepthTest() {
+        return maxDepthTest;
+    }
+
+    public void setTesting(boolean testing) {
+        this.testing = testing;
+    }
 
     public ArrayList<Double[]> getSavedValues() {
         return savedValues;
