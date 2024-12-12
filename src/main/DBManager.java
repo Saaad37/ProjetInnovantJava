@@ -1,6 +1,7 @@
 package main;
 
 import javax.swing.plaf.nimbus.State;
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -42,9 +43,9 @@ public class DBManager {
             ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
             System.out.println("+----------------------+------------------------------+--------------------\n");
             while(rs.next()){
-                System.out.println("| uuid | " + rs.getInt("uuid") + "\n");
-                System.out.println("| first_name | " +  rs.getString("first_name") + "\n");
-                System.out.println("| last_name | " + rs.getString("last_name") + "\n");
+                System.out.println("| uuid | " + rs.getInt("uuid"));
+                System.out.println("        | first_name | " +  rs.getString("first_name"));
+                System.out.println("        | last_name | " + rs.getString("last_name") );
             }
             System.out.println("+------------------------+------------------------+--------------------------\n");
         } catch (SQLException e) {
@@ -55,40 +56,32 @@ public class DBManager {
     private int generateUUID(){
         Random rand = new Random();
         int uuid_len = rand.nextInt(1, 4);
-        String uuid = String.valueOf(rand.nextInt(9) * uuid_len);
+        String uuid = String.format("%040d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16)).substring(5, 10);
         int uuidInt = Integer.parseInt(uuid);
-        if(getAllids().contains(uuid)){
+        if(getAllids().contains(uuidInt)){
             generateUUID();
         }
         return uuidInt;
     }
 
-    private void InsertUser(int uuid, String firstName, String lastName){
+    private void insertUser(int uuid, String firstName, String lastName){
         try {
             Statement stmt = con.createStatement();
             stmt.executeUpdate("INSERT INTO " + tableName + "(uuid, first_name, last_name) " +
-                    "VALUES(" + uuid + ", '" + firstName + "', '" + lastName + "'");
+                    "VALUES(" + uuid + ", '" + firstName + "', '" + lastName + "')");
             // INSERT INTO users(uuid, first_name, last_name) VALUES(9457, ''"
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void changeMaxDepth(double maxDepth, int uuid){
+    private void changeMaxDepth(int uuid ,double maxDepth){
         try {
             Statement stmt = con.createStatement();
-            stmt.executeQuery("UPDATE " + tableName + " SET maxDepth=" + maxDepth + " WHERE uuid="+ uuid  );
+            stmt.executeUpdate("UPDATE " + tableName + " SET maxDepth=" + maxDepth + " WHERE uuid="+ uuid  );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    public static void main(String[] args) {
-        DBManager db = new DBManager();
-
-        db.InsertUser(db.generateUUID(), "Saad", "Norelyaqine");
-        System.out.println(db.getAllids().toString());
 
     }
 
