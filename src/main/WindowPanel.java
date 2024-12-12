@@ -23,6 +23,9 @@ public class WindowPanel extends JPanel implements Runnable {
      * et profondeur.
      */
 
+    private final int winWidth = 720;
+    private final int winHeight = 600;
+
     final double XO2 = 0.2f; // %
     final double XN2 = 0.8f; // %
     final double P0 = 1.013f; // bar
@@ -45,13 +48,14 @@ public class WindowPanel extends JPanel implements Runnable {
      * Initialisation des variables.
      */
 
+    double maxDepth;
     double maxValN2 = (4 * XN2) * 750;
 
     SoundSystem soundSys = new SoundSystem(alarmPath);
 
-    Button startButton = new Button(new Rectangle(75, 500, 80, 35), "Start");
-    Button stopButton = new Button(new Rectangle(275, 500, 80, 35), "Stop");
-    Button pauseButton = new Button(new Rectangle(475, 500, 80, 35), "Pause");
+    Button startButton = new Button(new Rectangle((winWidth / 3) - 200 , 500, 80, 35), "Start");
+    Button stopButton = new Button(new Rectangle(2 * (winWidth - 200) / 3, 500, 80, 35), "Stop");
+    Button pauseButton = new Button(new Rectangle(winWidth - 200, 500, 80, 35), "Pause");
 
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
@@ -152,7 +156,7 @@ public class WindowPanel extends JPanel implements Runnable {
         // this veut dire cette classe JPanel
 
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(720, 600));
+        this.setPreferredSize(new Dimension(winWidth, winHeight));
         this.setBackground(bgColor);
 
         this.add(subroticLogo);
@@ -348,6 +352,8 @@ public class WindowPanel extends JPanel implements Runnable {
             comp.setForeground(defaultColor);
         }
     }
+
+
 
     public ArrayList<Double[]> getSavedValues() {
         return savedValues;
