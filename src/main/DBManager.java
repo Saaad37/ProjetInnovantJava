@@ -14,9 +14,4 @@ public class DBManager {
         }
     }
 
-    public static void main(String[] args) {
-        DBManager db = new DBManager();
-
-    }
-
 }
