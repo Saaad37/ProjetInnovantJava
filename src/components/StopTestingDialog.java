@@ -16,7 +16,8 @@ public class StopTestingDialog extends JDialog {
         errorLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
         Image icon = new ImageIcon(this.getClass().getResource("/assets/errorIcon.png")).getImage();
         Button abort = new Button(new Rectangle(45, 80, 80, 30), "Abort");
-        Button lose = new Button(null, "I am Sure");
+        Button lose = new Button(new Rectangle(99, 99, 99, 99), "I am Sure");
+        // The coordinates don't matter because i setted up a layout
 
         abort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
