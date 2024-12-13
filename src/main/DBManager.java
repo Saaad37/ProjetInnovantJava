@@ -5,6 +5,8 @@ import components.Window;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,9 +19,8 @@ public class DBManager {
     Connection con;
     WindowPanel wp;
     JTable table;
-    JScrollPane scrollPane;
-    GroupLayout layout;
-    Font font = new Font("Helvetica", Font.PLAIN, 20);
+    JTextField firstNameField;
+    JTextField lastNameField;
     String[] columnNames;
     ArrayList<String[]> totalData;
     Window f;
@@ -76,15 +77,23 @@ public class DBManager {
 
     private void initComponents() {
 
-        JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
+        JScrollPane jScrollPane1 = new JScrollPane();
         table = new JTable();
+        JLabel firstNameTxt = new JLabel("First name:");
+        JLabel lastNameTxt = new JLabel("Last name:");
         f = new Window("Users");
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.setPreferredSize(new Dimension(500, 480));
+        firstNameField= new JTextField();
+        lastNameField = new JTextField();
+
+        firstNameTxt.setBounds(new Rectangle(10, 20, 180, 35));
+        lastNameTxt.setBounds(new Rectangle(10, 60, 180, 35));
+        firstNameField.setBounds(new Rectangle(100, 20, 380 ,35));
+        lastNameField.setBounds(new Rectangle(100, 60, 380, 35));
 
 
-
-        table.setModel(new javax.swing.table.DefaultTableModel(
+        table.setModel(new DefaultTableModel(
                 new Object [][] {
 
                 },
@@ -97,29 +106,49 @@ public class DBManager {
             }
         });
         table.setColumnSelectionAllowed(true);
-        table.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        table.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
+        table.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        table.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
         table.setFillsViewportHeight(true);
         jScrollPane1.setViewportView(table);
         table.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(f.getContentPane());
+        GroupLayout layout = new GroupLayout(f.getContentPane());
         f.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addContainerGap(132, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 275, GroupLayout.PREFERRED_SIZE)
                                 .addGap(19, 19, 19))
         );
+
+        f.add(firstNameField);
+        f.add(lastNameField);
+        f.add(firstNameTxt);
+        f.add(lastNameTxt);
+
         f.pack();
+    }
+    
+    public int getMaxDepth(int uuid){
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT maxDepth FROM users WHERE uuid=" + uuid);
+            int maxDepth = 0;
+            while(rs.next()){
+             maxDepth = rs.getInt("maxDepth");
+            }
+            return maxDepth;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private ArrayList<Integer> getAllids(){
@@ -173,7 +202,7 @@ public class DBManager {
             // INSERT INTO users(uuid, first_name, last_name) VALUES(uuid, 'first_name','last_name');
             stmt.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw  new RuntimeException(e);
         }
     }
 
