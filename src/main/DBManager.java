@@ -1,5 +1,7 @@
 package main;
 
+import components.Button;
+import components.ErrorDialogBox;
 import components.Window;
 
 import javax.swing.*;
@@ -24,6 +26,9 @@ public class DBManager {
     String[] columnNames;
     ArrayList<String[]> totalData;
     Window f;
+    components.Button addButton;
+    components.Button delButton;
+    components.Button updateButton;
 
 
     public DBManager(WindowPanel wp){
@@ -62,18 +67,11 @@ public class DBManager {
                 dtm.addRow(data);
             }
 
-            f.pack();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
-
-    private void showAllUsersWindow(){
-
-    }
-
 
     private void initComponents() {
 
@@ -82,6 +80,7 @@ public class DBManager {
         JLabel firstNameTxt = new JLabel("First name:");
         JLabel lastNameTxt = new JLabel("Last name:");
         f = new Window("Users");
+        addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.setPreferredSize(new Dimension(500, 480));
         firstNameField= new JTextField();
@@ -92,6 +91,23 @@ public class DBManager {
         firstNameField.setBounds(new Rectangle(100, 20, 380 ,35));
         lastNameField.setBounds(new Rectangle(100, 60, 380, 35));
 
+
+        addButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                String firstName = firstNameField.getText();
+                String lastName = lastNameField.getText();
+                if(firstName == "" || lastName == ""){
+                    ErrorDialogBox d = new ErrorDialogBox("You must enter a first name and a last name");
+                    d.setVisible(true);
+                    return;
+                }else{
+                    insertUser(generateUUID(), firstName, lastName);
+                    System.out.println("User added sucessefully !");
+                    fetchUsers();
+                }
+
+            }
+        });
 
         table.setModel(new DefaultTableModel(
                 new Object [][] {
@@ -133,6 +149,7 @@ public class DBManager {
         f.add(lastNameField);
         f.add(firstNameTxt);
         f.add(lastNameTxt);
+        f.add(addButton);
 
         f.pack();
     }
