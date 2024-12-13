@@ -54,7 +54,7 @@ public class DBManager {
     private void updateTable(){
         try {
             int c;
-            PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName);
+            PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName + " ORDER BY last_name ASC");
             ResultSet rs = pst.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -193,10 +193,10 @@ public class DBManager {
     private void printAllUsers(){
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
+            ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName + " ORDER BY last_name ASC");
             System.out.println("+----------------------+------------------------------+--------------------\n");
             while(rs.next()){
-                System.out.println("| uuid | " + rs.getInt("uuid"));
+                System.out.println("        | uuid | " + rs.getInt("uuid"));
                 System.out.println("        | first_name | " +  rs.getString("first_name"));
                 System.out.println("        | last_name | " + rs.getString("last_name") );
             }
