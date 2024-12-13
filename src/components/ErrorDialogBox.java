@@ -5,12 +5,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 
 public class ErrorDialogBox extends JDialog {
 
     public ErrorDialogBox(String ErrorMessage){
         JLabel errorLabel = new JLabel(ErrorMessage, SwingConstants.CENTER);
-        errorLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
+        Font font = new Font("Helvetica", Font.PLAIN, 20);
+        errorLabel.setFont(font);
         Image icon = new ImageIcon(this.getClass().getResource("/assets/errorIcon.png")).getImage();
         Button b = new Button(new Rectangle(45, 80, 80, 30), "Ok");
 
@@ -20,8 +23,10 @@ public class ErrorDialogBox extends JDialog {
             }
         });
 
+        int textWidth = (int) font.getStringBounds(ErrorMessage, new FontRenderContext(new AffineTransform(), true, true)).getWidth();
+
         this.setTitle("Error");
-        this.setSize(new Dimension(250, 120));
+        this.setSize(new Dimension(textWidth + 50, 120));
         this.add(errorLabel);
         this.add(b);
         this.setLocationRelativeTo(null);

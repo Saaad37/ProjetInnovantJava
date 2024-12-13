@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextMeasurer;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 public class StopTestingDialog extends JDialog {
@@ -13,11 +16,14 @@ public class StopTestingDialog extends JDialog {
     public StopTestingDialog(String mess, WindowPanel wp){
         ArrayList<Double> arr = wp.getMaxDepthTest();
         JLabel errorLabel = new JLabel(mess, SwingConstants.CENTER);
-        errorLabel.setFont(new Font("Helvetica", Font.PLAIN, 20));
+        Font font = new Font("Helvetica", Font.PLAIN, 20);
+        errorLabel.setFont(font);
         Image icon = new ImageIcon(this.getClass().getResource("/assets/errorIcon.png")).getImage();
         Button abort = new Button(new Rectangle(45, 80, 80, 30), "Abort");
         Button lose = new Button(new Rectangle(99, 99, 99, 99), "I am Sure");
-        // The coordinates don't matter because i setted up a layout
+        // The coordinates don't matter because i set up a layout
+
+        int textWidth = (int) font.getStringBounds(mess, new FontRenderContext(new AffineTransform(), true, true)).getWidth();
 
         abort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -34,17 +40,16 @@ public class StopTestingDialog extends JDialog {
         });
 
         this.setTitle("Error");
-        this.setSize(new Dimension(250, 120));
+        this.setSize(new Dimension(textWidth + 50, 120));
         this.add(errorLabel);
         this.add(abort);
         this.add(lose);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setIconImage(icon);
-        this.setLayout(new GridLayout(2, 2));
+        this.setLayout(new GridLayout(2, 1));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     }
-
 
 }
