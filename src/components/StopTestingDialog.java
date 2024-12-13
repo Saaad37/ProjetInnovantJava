@@ -15,6 +15,7 @@ public class StopTestingDialog extends JDialog {
 
     public StopTestingDialog(String mess, WindowPanel wp){
         ArrayList<Double> arr = wp.getMaxDepthTest();
+        SoundSystem soundSys = new SoundSystem("/assets/ErrorSound.wav");
         JLabel errorLabel = new JLabel(mess, SwingConstants.CENTER);
         Font font = new Font("Helvetica", Font.PLAIN, 20);
         errorLabel.setFont(font);
@@ -23,21 +24,27 @@ public class StopTestingDialog extends JDialog {
         Button lose = new Button(new Rectangle(99, 99, 99, 99), "I am Sure");
         // The coordinates don't matter because i set up a layout
 
+        soundSys.playSound(0);
+
         int textWidth = (int) font.getStringBounds(mess, new FontRenderContext(new AffineTransform(), true, true)).getWidth();
 
         abort.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                soundSys.stopSound();
                 dispose();
             }
         });
 
         lose.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                soundSys.stopSound();
                 arr.clear();
                 wp.setTesting(false);
                 dispose();
             }
         });
+
+
 
         this.setTitle("Error");
         this.setSize(new Dimension(textWidth + 50, 120));

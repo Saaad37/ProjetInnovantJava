@@ -11,6 +11,8 @@ import java.awt.geom.AffineTransform;
 public class ErrorDialogBox extends JDialog {
 
     public ErrorDialogBox(String ErrorMessage){
+        SoundSystem soundSys = new SoundSystem("/assets/ErrorSound.wav");
+        soundSys.playSound(0);
         JLabel errorLabel = new JLabel(ErrorMessage, SwingConstants.CENTER);
         Font font = new Font("Helvetica", Font.PLAIN, 20);
         errorLabel.setFont(font);
@@ -19,6 +21,7 @@ public class ErrorDialogBox extends JDialog {
 
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                soundSys.stopSound();
                 dispose();
             }
         });
