@@ -46,6 +46,7 @@ public class WindowPanel extends JPanel implements Runnable {
     boolean testing;
     boolean paused;
     boolean stopped;
+    boolean profileSelected;
 
     // TODO Faire un graphe des valeurs depuis le debut du programme
 
@@ -114,10 +115,10 @@ public class WindowPanel extends JPanel implements Runnable {
 
         db = new DBManager(wp);
 
+
         testing = false;
         paused = false;
         stopped = true;
-
 
 
         startButton.addActionListener(new ActionListener() {
@@ -449,6 +450,15 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void setTesting(boolean testing) {
         this.testing = testing;
+    }
+
+
+    public boolean isProfileSelected() {
+        return profileSelected;
+    }
+
+    public void setProfileSelected(boolean profileSelected) {
+        this.profileSelected = profileSelected;
     }
 
     public ArrayList<Double[]> getSavedValues() {
