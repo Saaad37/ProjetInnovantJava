@@ -35,7 +35,7 @@ public class DBManager {
         this.wp = wp;
         columnNames = new String[] {"UUID", "First Name", "Last Name", "Date Created", "Limit Depth"};
         totalData = new ArrayList<>();
-
+        f = new Window("Users");
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
             System.out.println("Connection Established successfully !");
@@ -47,9 +47,12 @@ public class DBManager {
     }
 
     public void fetchUsers(){
-        try {
-            initComponents();
+        initComponents();
+        updateTable();
+    }
 
+    private void updateTable(){
+        try {
             int c;
             PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName);
             ResultSet rs = pst.executeQuery();
@@ -61,16 +64,16 @@ public class DBManager {
                 String[] data = new String[] {};
                 for(int i = 0; i < rsmd.getColumnCount();i++){
                     data = (new String[] {rs.getString("uuid"), rs.getString("first_name"), rs.getString("last_name")
-                    , rs.getString("profile_age"), rs.getString("maxDepth")});
+                            , rs.getString("profile_age"), rs.getString("maxDepth")});
                 }
                 totalData.add(data);
                 dtm.addRow(data);
+                f.repaint();
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private void initComponents() {
@@ -79,7 +82,6 @@ public class DBManager {
         table = new JTable();
         JLabel firstNameTxt = new JLabel("First name:");
         JLabel lastNameTxt = new JLabel("Last name:");
-        f = new Window("Users");
         addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         f.setPreferredSize(new Dimension(500, 480));
@@ -99,11 +101,14 @@ public class DBManager {
                 if(firstName == "" || lastName == ""){
                     ErrorDialogBox d = new ErrorDialogBox("You must enter a first name and a last name");
                     d.setVisible(true);
-                    return;
+                    firstNameField.setText("");
+                    lastNameField.setText("");
                 }else{
                     insertUser(generateUUID(), firstName, lastName);
                     System.out.println("User added sucessefully !");
-                    fetchUsers();
+                    firstNameField.setText("");
+                    lastNameField.setText("");
+                    updateTable();
                 }
 
             }
@@ -121,6 +126,8 @@ public class DBManager {
                 return false;
             }
         });
+
+
         table.setColumnSelectionAllowed(true);
         table.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         table.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
