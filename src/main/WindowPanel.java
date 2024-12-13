@@ -44,6 +44,8 @@ public class WindowPanel extends JPanel implements Runnable {
     int frameCounter;
 
     boolean testing;
+    boolean paused;
+    boolean stopped;
 
     // TODO Faire un graphe des valeurs depuis le debut du programme
 
@@ -56,10 +58,11 @@ public class WindowPanel extends JPanel implements Runnable {
 
     SoundSystem soundSys = new SoundSystem(alarmPath);
 
-    Button startButton = new Button(new Rectangle((winWidth / 3) - 200 , 500, 80, 35), "Start");
-    Button stopButton = new Button(new Rectangle(2 * (winWidth - 200) / 3, 500, 80, 35), "Stop");
-    Button pauseButton = new Button(new Rectangle(winWidth - 200, 500, 80, 35), "Pause");
-    Button testingButton = new Button(new Rectangle(500, 480, 80, 35), "Start Test");
+    Button startButton = new Button(new Rectangle(70 , 500, 80, 35), "Start");
+    Button stopButton = new Button(new Rectangle(200, 500, 80, 35), "Stop");
+    Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause");
+    Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test");
+    Button saveTesting = new Button(new Rectangle(280, 550, 100, 35), "Save Tests");
 
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
@@ -107,52 +110,76 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public WindowPanel() { // Constructeur.
 
-        // Appliquer la police a tous les textes
+
         testing = false;
+        paused = false;
+        stopped = true;
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (windowThread == null) {
                     startThread();
+                    paused = false;
+                    stopped = false;
                 }
+                System.out.println(paused + " " + stopped );
             }
         });
 
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 stopThread();
+                paused = true;
+                stopped = false;
+                System.out.println(paused + " " + stopped );
             }
         });
 
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(testing){
-                    maxDepthTest.add(savedValues.get(timerIterations)[0]);
-                    System.out.println(maxDepthTest.toString());
-                }
                 stopThread();
                 resetValues();
+                System.out.println(paused + " " + stopped );
             }
         });
 
         testingButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if(windowThread != null ){
+                if(paused ||!stopped){
                     ErrorDialogBox dialog = new ErrorDialogBox("Can't run tests now..");
                     dialog.setVisible(true);
                 }
-                setTestingState();
-                if(testing && windowThread == null && maxDepthTest.isEmpty()){
+                if(testing && stopped && maxDepthTest.isEmpty()){
                     testing = false;
-                }else if(!testing && windowThread == null){
+                }else if(!testing && stopped){
                     maxDepthTest.clear();
                     testing = true;
-                }else if(testing && windowThread == null && !maxDepthTest.isEmpty()){
-                    StopTestingDialog d = new StopTestingDialog("Do you want to lose your progession ?", wp);
+                }else if(testing && stopped && !maxDepthTest.isEmpty()){
+                    StopTestingDialog d = new StopTestingDialog("Do you want to lose your progression ?", wp);
                     System.out.println(testing);
                     d.setVisible(true);
                 }
+                setTestingState();
+            }
+        });
 
+        saveTesting.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(!testing){
+                    ErrorDialogBox e = new ErrorDialogBox("You are not currently testing");
+                    e.setVisible(true);
+                }else if((!paused && !stopped) ){
+                    maxDepthTest.add(savedValues.getLast()[0]);
+                    stopThread();
+                    resetValues();
+                }else{
+                    ErrorDialogBox e = new ErrorDialogBox("Nothing to save start a new session..");
+                    e.setVisible(true);
+                }
+                if(!maxDepthTest.isEmpty()){
+                    System.out.println(maxDepthTest.toString());
+                }
+                System.out.println(paused + " " + stopped );
             }
         });
 
@@ -189,7 +216,9 @@ public class WindowPanel extends JPanel implements Runnable {
 
         this.setLayout(null);
         this.setPreferredSize(new Dimension(winWidth, winHeight));
-        this.setBackground(bgColor);
+
+        setTestingState();
+
 
         this.add(subroticLogo);
         this.add(pressureTxt);
@@ -202,6 +231,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(pauseButton);
         this.add(stopButton);
         this.add(testingButton);
+        this.add(saveTesting);
     }
 
     // Commencer le thread
@@ -229,6 +259,8 @@ public class WindowPanel extends JPanel implements Runnable {
         checkValues();
         displayValues();
         displayTimer();
+        paused = false;
+        stopped = true;
         System.out.println(savedValues.toString());
     }
 
@@ -322,6 +354,7 @@ public class WindowPanel extends JPanel implements Runnable {
                  */
                 displayValues(); // Afficher les valeurs
                 saveValues(); // Sauvegarder les valeurs dans la liste des valeurs sauvegardées
+                System.out.println(testing);
                 timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
                 if (timerIterations % 60 == 0) {
                     minPassed++;
@@ -389,8 +422,10 @@ public class WindowPanel extends JPanel implements Runnable {
     private void setTestingState(){
         if(testing){
             testingButton.setText("Stop Testing");
+            setBackground(Color.RED);
         }else{
             testingButton.setText("Start Testing");
+            setBackground(bgColor);
         }
     }
 
@@ -404,6 +439,10 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public ArrayList<Double[]> getSavedValues() {
         return savedValues;
+    }
+
+    public WindowPanel getWp(){
+        return wp;
     }
 
 }
