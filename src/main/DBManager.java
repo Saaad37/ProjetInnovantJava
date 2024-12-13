@@ -80,6 +80,7 @@ public class DBManager {
         table = new JTable();
         f = new Window("Users");
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        f.setPreferredSize(new Dimension(500, 480));
 
 
 
@@ -96,12 +97,11 @@ public class DBManager {
             }
         });
         table.setColumnSelectionAllowed(true);
-        table.isCellEditable(0, 0);
         table.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         table.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
         table.setFillsViewportHeight(true);
         jScrollPane1.setViewportView(table);
-        table.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        table.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(f.getContentPane());
         f.getContentPane().setLayout(layout);
@@ -114,12 +114,11 @@ public class DBManager {
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
+                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap(132, Short.MAX_VALUE)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(19, Short.MAX_VALUE))
+                                .addGap(19, 19, 19))
         );
-
         f.pack();
     }
 
@@ -131,6 +130,7 @@ public class DBManager {
             while(rs.next()){
                 ids.add(rs.getInt("uuid"));
             }
+            stmt.close();
             return ids;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -148,6 +148,7 @@ public class DBManager {
                 System.out.println("        | last_name | " + rs.getString("last_name") );
             }
             System.out.println("+------------------------+------------------------+--------------------------\n");
+            stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -169,7 +170,8 @@ public class DBManager {
             Statement stmt = con.createStatement();
             stmt.executeUpdate("INSERT INTO " + tableName + "(uuid, first_name, last_name) " +
                     "VALUES(" + uuid + ", '" + firstName + "', '" + lastName + "')");
-            // INSERT INTO users(uuid, first_name, last_name) VALUES(9457, ''"
+            // INSERT INTO users(uuid, first_name, last_name) VALUES(uuid, 'first_name','last_name');
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -179,6 +181,7 @@ public class DBManager {
         try {
             Statement stmt = con.createStatement();
             stmt.executeUpdate("UPDATE " + tableName + " SET maxDepth=" + maxDepth + " WHERE uuid="+ uuid  );
+            stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
