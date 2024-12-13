@@ -1,6 +1,12 @@
 package main;
 
+import components.Window;
+
+import javax.swing.*;
 import javax.swing.plaf.nimbus.State;
+import javax.swing.table.DefaultTableModel;
+import javax.xml.transform.Result;
+import java.awt.*;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,15 +18,64 @@ public class DBManager {
     static final String tableName = "users";
     Connection con;
     WindowPanel wp;
+    JTable table;
+    Font font = new Font("Helvetica", Font.PLAIN, 20);
+    String[] columnNames;
+    ArrayList<String[]> totalData;
 
-    public DBManager(){
-//        this.wp = wp;
+
+    public DBManager(WindowPanel wp){
+        this.wp = wp;
+        columnNames = new String[] {"UUID", "First Name", "Last Name", "Date Created", "Limit Depth"};
+        totalData = new ArrayList<>();
+        showAllUsersWindow();
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
             System.out.println("Connection Established successfully !");
+            printAllUsers();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void fetchUsers(){
+        try {
+            int c;
+            PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName);
+            ResultSet rs = pst.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+
+            DefaultTableModel dtm = (DefaultTableModel)  table.getModel();
+            dtm.setRowCount(0);
+            while(rs.next()){
+                String[] data = new String[] {};
+                for(int i = 0; i < rsmd.getColumnCount();i++){
+                    data = (new String[] {rs.getString("uuid"), rs.getString("first_name"), rs.getString("last_name")
+                    , rs.getString("profile_age"), rs.getString("maxDepth")});
+                }
+                totalData.add(data);
+                dtm.addRow(data);
+            }
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void showAllUsersWindow(){
+        Window f = new Window("Users");
+        table = new JTable();
+        f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        f.setPreferredSize(new Dimension(720, 500));
+        f.setBackground(Color.gray);
+        f.add(table);
+
+
+
+        f.pack();
+
     }
 
     private ArrayList<Integer> getAllids(){
