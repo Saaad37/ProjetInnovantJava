@@ -40,6 +40,7 @@ public class StopTestingDialog extends JDialog {
                 soundSys.stopSound();
                 arr.clear();
                 wp.setTesting(false);
+                wp.setTestingState();
                 dispose();
             }
         });

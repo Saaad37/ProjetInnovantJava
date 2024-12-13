@@ -107,13 +107,17 @@ public class WindowPanel extends JPanel implements Runnable {
     double interval;
 
     WindowPanel wp = this;
+    DBManager db;
 
     public WindowPanel() { // Constructeur.
 
+        db = new DBManager(wp);
 
         testing = false;
         paused = false;
         stopped = true;
+
+
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -420,11 +424,7 @@ public class WindowPanel extends JPanel implements Runnable {
     }
 
 
-    public SoundSystem getSoundSys() {
-        return soundSys;
-    }
-
-    private void setTestingState(){
+    public void setTestingState(){
         if(testing){
             testingButton.setText("Stop Testing");
             setBackground(Color.RED);
