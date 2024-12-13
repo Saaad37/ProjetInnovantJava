@@ -63,6 +63,7 @@ public class WindowPanel extends JPanel implements Runnable {
     Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause");
     Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test");
     Button saveTesting = new Button(new Rectangle(280, 550, 100, 35), "Save Tests");
+    Button manageProfiles = new Button(new Rectangle(280, 380, 100, 35), "Manage Profiles");
 
     Thread windowThread; // Initialisation du thread, qui va repeter un processus indéfiniment.
     Random rand = new Random(); // Initialisation d'une instance de Random qui va permettre de choisir des
@@ -129,6 +130,13 @@ public class WindowPanel extends JPanel implements Runnable {
                 System.out.println(paused + " " + stopped );
             }
         });
+
+        manageProfiles.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                db.fetchUsers();
+            }
+        });
+
 
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -236,6 +244,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(stopButton);
         this.add(testingButton);
         this.add(saveTesting);
+        this.add(manageProfiles);
     }
 
     // Commencer le thread

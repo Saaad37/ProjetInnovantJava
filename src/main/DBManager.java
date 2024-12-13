@@ -3,9 +3,7 @@ package main;
 import components.Window;
 
 import javax.swing.*;
-import javax.swing.plaf.nimbus.State;
 import javax.swing.table.DefaultTableModel;
-import javax.xml.transform.Result;
 import java.awt.*;
 import java.math.BigInteger;
 import java.sql.*;
@@ -42,9 +40,8 @@ public class DBManager {
         }
     }
 
-    private void fetchUsers(){
+    public void fetchUsers(){
         try {
-
             initComponents();
 
             int c;
