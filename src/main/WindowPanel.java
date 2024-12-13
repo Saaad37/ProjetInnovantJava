@@ -286,7 +286,7 @@ public class WindowPanel extends JPanel implements Runnable {
         if (PaN2Val >= maxValN2 - 375) {
             N2Warning = "N2 Partial too high narcose may happen";
             blinkingColors(PaN2Txt, Color.red);
-            soundSys.playSound();
+            soundSys.playSound(1);
         } else if (PaN2Val < maxValN2 - 375) {
             N2Warning = "Normal N2 Partial Pression";
             PaN2Txt.setForeground(defaultColor);
@@ -417,6 +417,11 @@ public class WindowPanel extends JPanel implements Runnable {
         } else {
             comp.setForeground(defaultColor);
         }
+    }
+
+
+    public SoundSystem getSoundSys() {
+        return soundSys;
     }
 
     private void setTestingState(){
