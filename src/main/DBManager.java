@@ -19,19 +19,23 @@ public class DBManager {
     Connection con;
     WindowPanel wp;
     JTable table;
+    JScrollPane scrollPane;
+    GroupLayout layout;
     Font font = new Font("Helvetica", Font.PLAIN, 20);
     String[] columnNames;
     ArrayList<String[]> totalData;
+    Window f;
 
 
     public DBManager(WindowPanel wp){
         this.wp = wp;
         columnNames = new String[] {"UUID", "First Name", "Last Name", "Date Created", "Limit Depth"};
         totalData = new ArrayList<>();
-        showAllUsersWindow();
+
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
             System.out.println("Connection Established successfully !");
+            fetchUsers();
             printAllUsers();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -40,6 +44,9 @@ public class DBManager {
 
     private void fetchUsers(){
         try {
+
+            initComponents();
+
             int c;
             PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName);
             ResultSet rs = pst.executeQuery();
@@ -57,6 +64,7 @@ public class DBManager {
                 dtm.addRow(data);
             }
 
+            f.pack();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -65,17 +73,57 @@ public class DBManager {
     }
 
     private void showAllUsersWindow(){
-        Window f = new Window("Users");
+
+    }
+
+
+    private void initComponents() {
+
+        JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
         table = new JTable();
+        f = new Window("Users");
         f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        f.setPreferredSize(new Dimension(720, 500));
-        f.setBackground(Color.gray);
-        f.add(table);
 
 
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
+                new Object [][] {
+
+                },
+                new String [] {
+                        "UUID", "First Name", "Last Name", "Date Created", "Max Depth"
+                }
+        ){
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return false;
+            }
+        });
+        table.setColumnSelectionAllowed(true);
+        table.isCellEditable(0, 0);
+        table.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        table.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
+        table.setFillsViewportHeight(true);
+        jScrollPane1.setViewportView(table);
+        table.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(f.getContentPane());
+        f.getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(19, Short.MAX_VALUE))
+        );
 
         f.pack();
-
     }
 
     private ArrayList<Integer> getAllids(){
