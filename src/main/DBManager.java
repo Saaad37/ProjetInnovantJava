@@ -144,7 +144,8 @@ public class DBManager {
         firstNameField = new JTextField();
         lastNameField = new JTextField();
         addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
-        searchButton = new Button(new Rectangle(120, 100, 80, 35), "Search");
+        updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update");
+        searchButton = new Button(new Rectangle(200, 100, 80, 35), "Search");
 
 
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -216,6 +217,14 @@ public class DBManager {
             }
         });
 
+        updateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(true){
+
+                }
+            }
+        });
+
         table.setModel(new DefaultTableModel(
                 new Object [][] {
 
@@ -229,13 +238,13 @@ public class DBManager {
             }
         });
 
-
-        table.setColumnSelectionAllowed(true);
         table.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         table.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
         table.setFillsViewportHeight(true);
+
         jScrollPane1.setViewportView(table);
-        table.getColumnModel().getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
 
         GroupLayout layout = new GroupLayout(f.getContentPane());
         f.getContentPane().setLayout(layout);
@@ -261,6 +270,7 @@ public class DBManager {
         f.add(addButton);
         f.add(idsComboBox);
         f.add(searchButton);
+        f.add(updateButton);
 
         f.pack();
     }
