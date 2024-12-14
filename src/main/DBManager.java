@@ -74,7 +74,31 @@ public class DBManager {
                 dtm.addRow(data);
                 f.repaint();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+
+    private void searchTable(String firstName, String lastName){
+        try {
+            PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE first_name LIKE '%" + firstName +
+                    "%' AND last_name LIKE '%" + lastName + "%'");
+            ResultSet rs = pst.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+
+            DefaultTableModel dtm = (DefaultTableModel)  table.getModel();
+            dtm.setRowCount(0);
+            while(rs.next()){
+                String[] data = new String[] {};
+                for(int i = 0; i < rsmd.getColumnCount();i++){
+                    data = (new String[] {rs.getString("uuid"), rs.getString("first_name"), rs.getString("last_name")
+                            , rs.getString("profile_age"), rs.getString("maxDepth")});
+                }
+                totalData.add(data);
+                dtm.addRow(data);
+                f.repaint();
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -181,11 +205,15 @@ public class DBManager {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String selectedId = idsComboBox.getSelectedItem().toString();
-                if(selectedId.equals("id")){
-                    ErrorDialogBox e = new ErrorDialogBox("Select an id to search");
+                String firstName = firstNameField.getText();
+                String lastName = lastNameField.getText();
+                if(selectedId.equals("id") && firstName.isBlank() && lastName.isBlank() ) {
+                    ErrorDialogBox e = new ErrorDialogBox("Select an id or search by name");
                     e.setVisible(true);
-                }else{
+                }else if(!selectedId.equals("id")){
                     searchedTable(Integer.parseInt(selectedId));
+                }else{
+                    searchTable(firstName, lastName);
                 }
             }
         });
@@ -274,31 +302,6 @@ public class DBManager {
             }
             return res;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public ArrayList<String[]> getProfile(String firstName, String lastName){
-        try{
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("Select * from " + tableName + "WHERE first_name LIKE %" + firstName + "% AND last_name LIKE %" + lastName + "%");
-            ArrayList<String[]> res = new ArrayList<>();
-            String uuid;
-            String searchFirstName;
-            String searchLastName;
-            String dateCreated;
-            String maxDepth;
-            while (rs.next()) {
-                uuid = rs.getString("uuid");
-                searchFirstName = rs.getString("first_name");
-                searchLastName = rs.getString("last_name");
-                dateCreated = rs.getString("profile_age");
-                maxDepth = rs.getString("maxDepth");
-                res.add(new String[] {uuid, searchFirstName, searchLastName, dateCreated, maxDepth});
-            }
-            return res;
-        }
-        catch (SQLException e){
             throw new RuntimeException(e);
         }
     }
