@@ -26,18 +26,18 @@ public class DBManager {
     JTextField firstNameField;
     JTextField lastNameField;
     JScrollPane jScrollPane1;
-    String[] columnNames;
     ArrayList<String[]> totalData;
     Window f;
     components.Button addButton;
     components.Button delButton;
     components.Button updateButton;
+    components.Button searchButton;
+    JComboBox<String> idsComboBox;
     boolean isProfileOpened;
 
 
     public DBManager(WindowPanel wp){
         this.wp = wp;
-        columnNames = new String[] {"UUID", "First Name", "Last Name", "Date Created", "Limit Depth"};
         totalData = new ArrayList<>();
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
@@ -87,11 +87,14 @@ public class DBManager {
         isProfileOpened = true;
         jScrollPane1 = new JScrollPane();
         table = new JTable();
+        idsComboBox = new JComboBox<>();
         JLabel firstNameTxt = new JLabel("First name:");
         JLabel lastNameTxt = new JLabel("Last name:");
         firstNameField = new JTextField();
         lastNameField = new JTextField();
         addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
+
+
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         f.addWindowListener(new WindowListener() {
             @Override
@@ -100,7 +103,6 @@ public class DBManager {
             @Override
             public void windowClosing(WindowEvent e) {
                 isProfileOpened = false;
-                System.out.println(isProfileOpened);
                 e.getWindow().dispose();
             }
 
@@ -120,11 +122,13 @@ public class DBManager {
         System.out.println(isProfileOpened);
 
 
+        idsComboBox.setBounds(new Rectangle(350, 20, 100, 35));
         firstNameTxt.setBounds(new Rectangle(10, 20, 180, 35));
         lastNameTxt.setBounds(new Rectangle(10, 60, 180, 35));
-        firstNameField.setBounds(new Rectangle(100, 20, 380 ,35));
-        lastNameField.setBounds(new Rectangle(100, 60, 380, 35));
+        firstNameField.setBounds(new Rectangle(100, 20, 200 ,35));
+        lastNameField.setBounds(new Rectangle(100, 60, 200, 35));
 
+        loadIds();
 
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
@@ -140,6 +144,7 @@ public class DBManager {
                     System.out.println("User added sucessefully !");
                     firstNameField.setText("");
                     lastNameField.setText("");
+                    loadIds();
                     updateTable();
                 }
 
@@ -189,8 +194,21 @@ public class DBManager {
         f.add(firstNameTxt);
         f.add(lastNameTxt);
         f.add(addButton);
+        f.add(idsComboBox);
 
         f.pack();
+    }
+
+
+    public void loadIds(){
+        ArrayList<Integer> ids = getAllids();
+        System.out.println(ids.toString());
+        idsComboBox.removeAllItems();
+        idsComboBox.addItem("id");
+        for(int i = 0; i < ids.size() - 1;i++){
+            idsComboBox.addItem(ids.get(i).toString());
+        }
+
     }
     
     public int getMaxDepth(int uuid){
@@ -216,7 +234,7 @@ public class DBManager {
         ArrayList<Integer> ids = new ArrayList<>();
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT uuid FROM " + tableName);
+            ResultSet rs = stmt.executeQuery("SELECT uuid FROM " + tableName + " ORDER BY last_name ASC");
             while(rs.next()){
                 ids.add(rs.getInt("uuid"));
             }
