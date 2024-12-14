@@ -32,7 +32,7 @@ public class DBManager {
     components.Button addButton;
     components.Button delButton;
     components.Button updateButton;
-    components.Button searchButton;
+    JButton searchButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
 
@@ -125,7 +125,7 @@ public class DBManager {
                 dtm.addRow(data);
                 f.repaint();
             }
-
+            pst.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -143,23 +143,19 @@ public class DBManager {
         JLabel lastNameTxt = new JLabel("Last name:");
         firstNameField = new JTextField();
         lastNameField = new JTextField();
-        addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
-        searchButton = new Button(new Rectangle(130, 100, 75, 35), null);
-        searchButton.setIcon(WindowPanel.resizeImage(new ImageIcon("/assets/search.png"),
-                50, 50));
+        addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
+        searchButton = new Button(new Rectangle(120, 100, 80, 35), "Search");
 
 
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         f.addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent windowEvent) {}
-
             @Override
             public void windowClosing(WindowEvent e) {
                 isProfileOpened = false;
                 e.getWindow().dispose();
             }
-
             @Override
             public void windowClosed(WindowEvent windowEvent) {}
             @Override
