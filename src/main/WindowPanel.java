@@ -134,7 +134,13 @@ public class WindowPanel extends JPanel implements Runnable {
 
         manageProfiles.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                db.fetchUsers();
+                if(!db.isProfilesOpen()){
+                    db.fetchUsers();
+                }else{
+                    ErrorDialogBox e = new ErrorDialogBox("A window is already open..");
+                    e.setVisible(true);
+                }
+
             }
         });
 
