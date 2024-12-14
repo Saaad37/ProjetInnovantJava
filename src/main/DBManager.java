@@ -218,6 +218,20 @@ public class DBManager {
 
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                if(table.getSelectionModel().isSelectionEmpty()){
+                    ErrorDialogBox e = new ErrorDialogBox("Select a user before updating");
+                    e.setVisible(true);
+                }else{
+                    int uuid = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+                    System.out.println(uuid);
+                    String firstName = firstNameField.getText();
+                    String lastName = lastNameField.getText();
+                    updateUser(uuid, firstName, lastName);
+                    updateTable();
+
+                    firstNameField.setText("");
+                    lastNameField.setText("");
+                }
             }
         });
 
@@ -227,7 +241,6 @@ public class DBManager {
                     int r = table.getSelectedRow();
                     System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
                     int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
-
 
                     firstNameField.setText(getProfile(uuid).get(0));
                     lastNameField.setText(getProfile(uuid).get(1));
@@ -303,7 +316,8 @@ public class DBManager {
     public ArrayList<String> getProfile(int uuid){
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT first_name, last_name, profile_age, maxDepth FROM " + tableName + " WHERE uuid=" + uuid);
+            ResultSet rs = stmt.executeQuery("SELECT first_name, last_name, profile_age, maxDepth FROM " + tableName +
+                    " WHERE uuid=" + uuid);
             ArrayList<String> res = new ArrayList<>();
             String firstName = "";
             String lastName = "";
@@ -323,6 +337,18 @@ public class DBManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void updateUser(int uuid, String firstName, String lastName){
+        try {
+            PreparedStatement pst  = con.prepareStatement("UPDATE users SET first_name='" + firstName + "', last_name='" + lastName + "' WHERE uuid=" + uuid);
+            // UPDATE users SET first_name='firstName', last_name='lastName' WHERE uuid=uuid;
+            pst.executeUpdate();
+            pst.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
