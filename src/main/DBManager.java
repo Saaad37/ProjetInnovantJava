@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedInputStream;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -143,7 +144,9 @@ public class DBManager {
         firstNameField = new JTextField();
         lastNameField = new JTextField();
         addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
-        searchButton = new Button(new Rectangle(130, 100, 75, 35), "Search");
+        searchButton = new Button(new Rectangle(130, 100, 75, 35), null);
+        searchButton.setIcon(WindowPanel.resizeImage(new ImageIcon("/assets/search.png"),
+                50, 50));
 
 
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -208,8 +211,7 @@ public class DBManager {
                 String firstName = firstNameField.getText();
                 String lastName = lastNameField.getText();
                 if(selectedId.equals("id") && firstName.isBlank() && lastName.isBlank() ) {
-                    ErrorDialogBox e = new ErrorDialogBox("Select an id or search by name");
-                    e.setVisible(true);
+                    updateTable();
                 }else if(!selectedId.equals("id")){
                     searchedTable(Integer.parseInt(selectedId));
                 }else{

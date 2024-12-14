@@ -418,7 +418,7 @@ public class WindowPanel extends JPanel implements Runnable {
         }
     }
 
-    private ImageIcon resizeImage(ImageIcon imageIcon, int w, int h) {
+    public static ImageIcon resizeImage(ImageIcon imageIcon, int w, int h) {
         Image image = imageIcon.getImage();
         Image newImage = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(newImage);
