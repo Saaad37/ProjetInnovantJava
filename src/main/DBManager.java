@@ -5,12 +5,11 @@ import components.ErrorDialogBox;
 import components.Window;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.io.BufferedInputStream;
 import java.math.BigInteger;
 import java.sql.*;
@@ -219,11 +218,24 @@ public class DBManager {
 
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if(true){
+            }
+        });
+
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if(!e.getValueIsAdjusting()){
+                    int r = table.getSelectedRow();
+                    System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
+                    int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
+
+
+                    firstNameField.setText(getProfile(uuid).get(0));
+                    lastNameField.setText(getProfile(uuid).get(1));
 
                 }
             }
         });
+
 
         table.setModel(new DefaultTableModel(
                 new Object [][] {
@@ -241,7 +253,6 @@ public class DBManager {
         table.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         table.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
         table.setFillsViewportHeight(true);
-
         jScrollPane1.setViewportView(table);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
