@@ -147,6 +147,15 @@ public class DBManager {
                     loadIds();
                     updateTable();
                 }
+            }
+        });
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String selectedId = idsComboBox.getSelectedItem().toString();
+                if(selectedId == "id"){
+                }
 
             }
         });
@@ -210,16 +219,29 @@ public class DBManager {
         }
 
     }
+
+
     
-    public int getMaxDepth(int uuid){
+    public ArrayList<String> getProfile(int uuid){
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT maxDepth FROM users WHERE uuid=" + uuid);
-            int maxDepth = 0;
+            ResultSet rs = stmt.executeQuery("SELECT first_name, last_name, profile_age, maxDepth FROM users WHERE uuid=" + uuid);
+            ArrayList<String> res = new ArrayList<>();
+            String firstName = "";
+            String lastName = "";
+            String dateCreated = "";
+            String maxDepth = "";
             while(rs.next()){
-             maxDepth = rs.getInt("maxDepth");
+             firstName = rs.getString("first_name");
+             lastName = rs.getString("last_name");
+             dateCreated = rs.getString("profile_age");
+             maxDepth = rs.getString("maxDepth");
+             res.add(firstName);
+             res.add(lastName);
+             res.add(dateCreated);
+             res.add(maxDepth);
             }
-            return maxDepth;
+            return res;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
