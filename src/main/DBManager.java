@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,19 +25,20 @@ public class DBManager {
     JTable table;
     JTextField firstNameField;
     JTextField lastNameField;
+    JScrollPane jScrollPane1;
     String[] columnNames;
     ArrayList<String[]> totalData;
     Window f;
     components.Button addButton;
     components.Button delButton;
     components.Button updateButton;
+    boolean isProfileOpened;
 
 
     public DBManager(WindowPanel wp){
         this.wp = wp;
         columnNames = new String[] {"UUID", "First Name", "Last Name", "Date Created", "Limit Depth"};
         totalData = new ArrayList<>();
-        f = new Window("Users");
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
             System.out.println("Connection Established successfully !");
@@ -50,6 +53,7 @@ public class DBManager {
         initComponents();
         updateTable();
     }
+
 
     private void updateTable(){
         try {
@@ -76,17 +80,44 @@ public class DBManager {
         }
     }
 
-    private void initComponents() {
 
-        JScrollPane jScrollPane1 = new JScrollPane();
+    public void initComponents() {
+
+        f = new Window("Users");
+        isProfileOpened = true;
+        jScrollPane1 = new JScrollPane();
         table = new JTable();
         JLabel firstNameTxt = new JLabel("First name:");
         JLabel lastNameTxt = new JLabel("Last name:");
-        addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
-        f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        f.setPreferredSize(new Dimension(500, 480));
-        firstNameField= new JTextField();
+        firstNameField = new JTextField();
         lastNameField = new JTextField();
+        addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
+        f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        f.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent windowEvent) {}
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                isProfileOpened = false;
+                System.out.println(isProfileOpened);
+                e.getWindow().dispose();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent windowEvent) {}
+            @Override
+            public void windowIconified(WindowEvent windowEvent) {}
+            @Override
+            public void windowDeiconified(WindowEvent windowEvent) {}
+            @Override
+            public void windowActivated(WindowEvent windowEvent) {}
+            @Override
+            public void windowDeactivated(WindowEvent windowEvent) {}
+        });
+        f.setPreferredSize(new Dimension(500, 480));
+        System.out.println(isProfileOpened);
+
 
         firstNameTxt.setBounds(new Rectangle(10, 20, 180, 35));
         lastNameTxt.setBounds(new Rectangle(10, 60, 180, 35));
@@ -98,7 +129,7 @@ public class DBManager {
             public void actionPerformed(ActionEvent actionEvent) {
                 String firstName = firstNameField.getText();
                 String lastName = lastNameField.getText();
-                if(firstName == "" || lastName == ""){
+                if(firstName.isBlank() || lastName.isBlank()){
                     ErrorDialogBox d = new ErrorDialogBox("You must enter a first name and a last name");
                     d.setVisible(true);
                     firstNameField.setText("");
@@ -173,6 +204,11 @@ public class DBManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    public boolean isProfilesOpen(){
+        return isProfileOpened;
     }
 
     private ArrayList<Integer> getAllids(){
