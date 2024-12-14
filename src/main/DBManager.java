@@ -116,6 +116,7 @@ public class DBManager {
             public void windowDeactivated(WindowEvent windowEvent) {}
         });
         f.setPreferredSize(new Dimension(500, 480));
+        f.setAlwaysOnTop(true);
         System.out.println(isProfileOpened);
 
 
