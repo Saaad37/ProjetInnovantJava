@@ -36,6 +36,7 @@ public class ErrorDialogBox extends JDialog {
         this.setResizable(false);
         this.setIconImage(icon);
         this.setLayout(new GridLayout(2, 1));
+        this.setAlwaysOnTop(true);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
     }

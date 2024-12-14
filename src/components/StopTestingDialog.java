@@ -54,6 +54,7 @@ public class StopTestingDialog extends JDialog {
         this.add(lose);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
+        this.setAlwaysOnTop(true);
         this.setIconImage(icon);
         this.setLayout(new GridLayout(2, 1));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
