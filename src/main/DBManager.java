@@ -55,6 +55,32 @@ public class DBManager {
     }
 
 
+    public void searchedTable(int uuid){
+        try {
+            int c;
+            PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE uuid=" + uuid + " ORDER BY last_name ASC");
+            ResultSet rs = pst.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+
+            DefaultTableModel dtm = (DefaultTableModel)  table.getModel();
+            dtm.setRowCount(0);
+            while(rs.next()){
+                String[] data = new String[] {};
+                for(int i = 0; i < rsmd.getColumnCount();i++){
+                    data = (new String[] {rs.getString("uuid"), rs.getString("first_name"), rs.getString("last_name")
+                            , rs.getString("profile_age"), rs.getString("maxDepth")});
+                }
+                totalData.add(data);
+                dtm.addRow(data);
+                f.repaint();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private void updateTable(){
         try {
             int c;
@@ -93,6 +119,7 @@ public class DBManager {
         firstNameField = new JTextField();
         lastNameField = new JTextField();
         addButton = new Button(new Rectangle(40, 100, 70, 35), "Add");
+        searchButton = new Button(new Rectangle(130, 100, 75, 35), "Search");
 
 
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -154,9 +181,12 @@ public class DBManager {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 String selectedId = idsComboBox.getSelectedItem().toString();
-                if(selectedId == "id"){
+                if(selectedId.equals("id")){
+                    ErrorDialogBox e = new ErrorDialogBox("Select an id to search");
+                    e.setVisible(true);
+                }else{
+                    searchedTable(Integer.parseInt(selectedId));
                 }
-
             }
         });
 
@@ -204,6 +234,7 @@ public class DBManager {
         f.add(lastNameTxt);
         f.add(addButton);
         f.add(idsComboBox);
+        f.add(searchButton);
 
         f.pack();
     }
@@ -225,7 +256,7 @@ public class DBManager {
     public ArrayList<String> getProfile(int uuid){
         try {
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT first_name, last_name, profile_age, maxDepth FROM users WHERE uuid=" + uuid);
+            ResultSet rs = stmt.executeQuery("SELECT first_name, last_name, profile_age, maxDepth FROM " + tableName + " WHERE uuid=" + uuid);
             ArrayList<String> res = new ArrayList<>();
             String firstName = "";
             String lastName = "";
@@ -243,6 +274,31 @@ public class DBManager {
             }
             return res;
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<String[]> getProfile(String firstName, String lastName){
+        try{
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("Select * from " + tableName + "WHERE first_name LIKE %" + firstName + "% AND last_name LIKE %" + lastName + "%");
+            ArrayList<String[]> res = new ArrayList<>();
+            String uuid;
+            String searchFirstName;
+            String searchLastName;
+            String dateCreated;
+            String maxDepth;
+            while (rs.next()) {
+                uuid = rs.getString("uuid");
+                searchFirstName = rs.getString("first_name");
+                searchLastName = rs.getString("last_name");
+                dateCreated = rs.getString("profile_age");
+                maxDepth = rs.getString("maxDepth");
+                res.add(new String[] {uuid, searchFirstName, searchLastName, dateCreated, maxDepth});
+            }
+            return res;
+        }
+        catch (SQLException e){
             throw new RuntimeException(e);
         }
     }
