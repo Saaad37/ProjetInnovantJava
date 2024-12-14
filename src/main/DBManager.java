@@ -80,7 +80,7 @@ public class DBManager {
     }
 
 
-    private void searchTable(String firstName, String lastName){
+    private void searchedTable(String firstName, String lastName){
         try {
             PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE first_name LIKE '%" + firstName +
                     "%' AND last_name LIKE '%" + lastName + "%'");
@@ -213,7 +213,7 @@ public class DBManager {
                 }else if(!selectedId.equals("id")){
                     searchedTable(Integer.parseInt(selectedId));
                 }else{
-                    searchTable(firstName, lastName);
+                    searchedTable(firstName, lastName);
                 }
             }
         });
