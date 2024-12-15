@@ -193,7 +193,11 @@ public class DBManager {
                     d.setVisible(true);
                     firstNameField.setText("");
                     lastNameField.setText("");
-                }else{
+                }else if(!idsComboBox.getSelectedItem().equals("id")){
+                    ErrorDialogBox e = new ErrorDialogBox("Unselect id please.");
+                    e.setVisible(true);
+                }
+                else{
                     insertUser(generateUUID(), firstName, lastName);
                     System.out.println("User added sucessefully !");
                     firstNameField.setText("");
