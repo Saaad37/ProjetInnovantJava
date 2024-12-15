@@ -259,7 +259,7 @@ public class DBManager {
                 if(uuid == 0) return;
                 setUserID(uuid);
                 setMaxValN2(Integer.parseInt(getProfile(uuid).getLast()));
-                f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                isProfileOpened = false;
                 f.dispose();
             }
         });
