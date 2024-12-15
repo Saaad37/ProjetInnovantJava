@@ -107,7 +107,8 @@ public class DBManager {
 
     private void updateTable(){
         try {
-            int c;
+            table.setRowSelectionAllowed(false);
+            table.setColumnSelectionAllowed(false);
             PreparedStatement pst = con.prepareStatement("SELECT * FROM " + tableName + " ORDER BY last_name ASC");
             ResultSet rs = pst.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -123,6 +124,8 @@ public class DBManager {
                 totalData.add(data);
                 dtm.addRow(data);
                 f.repaint();
+                table.setRowSelectionAllowed(true);
+                table.setColumnSelectionAllowed(false);
             }
             pst.close();
         } catch (SQLException e) {
@@ -218,7 +221,7 @@ public class DBManager {
 
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if(table.getSelectionModel().isSelectionEmpty()){
+                if(table.getSelectedRow() < 0){
                     ErrorDialogBox e = new ErrorDialogBox("Select a user before updating");
                     e.setVisible(true);
                 }else{
@@ -239,11 +242,13 @@ public class DBManager {
             public void valueChanged(ListSelectionEvent e) {
                 if(!e.getValueIsAdjusting()){
                     int r = table.getSelectedRow();
-                    System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
-                    int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
+                        if(r >= 0){
+                            System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
+                            int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
 
-                    firstNameField.setText(getProfile(uuid).get(0));
-                    lastNameField.setText(getProfile(uuid).get(1));
+                            firstNameField.setText(getProfile(uuid).get(0));
+                            lastNameField.setText(getProfile(uuid).get(1));
+                    }
 
                 }
             }
