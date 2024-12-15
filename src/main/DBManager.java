@@ -253,6 +253,17 @@ public class DBManager {
             }
         });
 
+        useButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                int uuid = getUserId();
+                if(uuid == 0) return;
+                setUserID(uuid);
+                setMaxValN2(Integer.parseInt(getProfile(uuid).getLast()));
+                f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                f.dispose();
+            }
+        });
+
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if(!e.getValueIsAdjusting()){
@@ -443,12 +454,18 @@ public class DBManager {
     }
 
     public void setProfileOpened(boolean profileOpened) {
-        isProfileOpened = profileOpened;
+        wp.profileSelected = profileOpened;
     }
 
     public void setMaxValN2(int maxDepth){
-        double Pmax = (wp.rhoSaltedWater * wp.g * maxDepth + wp.P0Pasc) * Math.pow(10, -5);
+        double Pmax = ((wp.rhoSaltedWater * wp.g * maxDepth) + wp.P0Pasc) * Math.pow(10, -5);
+        System.out.println(Pmax);
         wp.maxValN2 = (Pmax * wp.XN2) * 750;
+    }
+
+    public void setUserID(int uuid){
+        wp.userId = uuid;
+        setProfileOpened(true);
     }
 
     private void changeMaxDepth(int uuid ,double maxDepth){

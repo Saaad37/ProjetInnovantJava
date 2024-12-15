@@ -55,7 +55,7 @@ public class WindowPanel extends JPanel implements Runnable {
      */
 
     double maxDepth;
-    double maxValN2 = (4 * XN2 ) * 750;
+    double maxValN2;
 
     SoundSystem soundSys = new SoundSystem(alarmPath);
 
