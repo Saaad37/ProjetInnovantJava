@@ -148,8 +148,8 @@ public class DBManager {
         addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
         updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update");
         delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete");
-
-        searchButton = new Button(new Rectangle(290, 100, 80, 35), "Search");
+        useButton = new Button(new Rectangle(290, 100, 80, 35), "Use");
+        searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search");
 
 
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -315,6 +315,7 @@ public class DBManager {
         f.add(idsComboBox);
         f.add(updateButton);
         f.add(delButton);
+        f.add(useButton);
         f.add(searchButton);
 
         f.pack();
@@ -383,11 +384,6 @@ public class DBManager {
 
     }
 
-
-    public boolean isProfilesOpen(){
-        return isProfileOpened;
-    }
-
     private ArrayList<Integer> getAllids(){
         ArrayList<Integer> ids = new ArrayList<>();
         try {
@@ -422,7 +418,6 @@ public class DBManager {
 
     private int generateUUID(){
         Random rand = new Random();
-        int uuid_len = rand.nextInt(1, 4);
         String uuid = String.format("%040d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16)).substring(5, 10);
         int uuidInt = Integer.parseInt(uuid);
         if(getAllids().contains(uuidInt)){
@@ -441,6 +436,19 @@ public class DBManager {
         } catch (SQLException e) {
             throw  new RuntimeException(e);
         }
+    }
+
+    public boolean isProfilesOpen(){
+        return isProfileOpened;
+    }
+
+    public void setProfileOpened(boolean profileOpened) {
+        isProfileOpened = profileOpened;
+    }
+
+    public void setMaxValN2(int maxDepth){
+        double Pmax = (wp.rhoSaltedWater * wp.g * maxDepth + wp.P0Pasc) * Math.pow(10, -5);
+        wp.maxValN2 = (Pmax * wp.XN2) * 750;
     }
 
     private void changeMaxDepth(int uuid ,double maxDepth){
