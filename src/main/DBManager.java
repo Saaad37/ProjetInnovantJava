@@ -459,8 +459,12 @@ public class DBManager {
 
     public void setMaxValN2(int maxDepth){
         double Pmax = ((wp.rhoSaltedWater * wp.g * maxDepth) + wp.P0Pasc) * Math.pow(10, -5);
-        System.out.println(Pmax);
+        setMaxDepth(maxDepth);
         wp.maxValN2 = (Pmax * wp.XN2) * 750;
+    }
+
+    public void setMaxDepth(int maxDepth){
+        wp.maxDepth = maxDepth;
     }
 
     public void setUserID(int uuid){

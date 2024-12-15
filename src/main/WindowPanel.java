@@ -203,18 +203,15 @@ public class WindowPanel extends JPanel implements Runnable {
                 if(!testing){
                     ErrorDialogBox e = new ErrorDialogBox("You are not currently testing");
                     e.setVisible(true);
-                }else if((!paused && !stopped) ){
+                }else if((!paused && !stopped)){
                     maxDepthTest.add(savedValues.getLast()[0]);
+                    setMaxDepth();
                     stopThread();
                     resetValues();
                 }else{
                     ErrorDialogBox e = new ErrorDialogBox("Nothing to save start a new session..");
                     e.setVisible(true);
                 }
-                if(!maxDepthTest.isEmpty()){
-                    System.out.println(maxDepthTest.toString());
-                }
-                System.out.println(paused + " " + stopped );
             }
         });
 
@@ -476,6 +473,17 @@ public class WindowPanel extends JPanel implements Runnable {
         this.testing = testing;
     }
 
+    public void setMaxDepth() {
+        int m = 0;
+        for(int i = 0;i < maxDepthTest.size();i++){
+            m += maxDepthTest.get(i);
+        }
+        this.maxDepth = m/maxDepthTest.size();
+    }
+
+    public void setMaxValN2(double maxValN2) {
+        this.maxValN2 = maxValN2;
+    }
 
     public boolean isProfileSelected() {
         return profileSelected;
