@@ -237,7 +237,14 @@ public class DBManager {
 
         delButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
+                int uuid = getUserId();
+                if(uuid == 0) return;
+                deleteUser(uuid);
+                updateTable();
+                loadIds();
 
+                firstNameField.setText("");
+                lastNameField.setText("");
             }
         });
 
@@ -308,13 +315,24 @@ public class DBManager {
         f.pack();
     }
 
+    private void deleteUser(int uuid) {
+        try {
+            PreparedStatement pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE uuid=" + uuid);
+            pst.executeUpdate();
+            pst.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
     public void loadIds(){
         ArrayList<Integer> ids = getAllids();
         System.out.println(ids.toString());
         idsComboBox.removeAllItems();
         idsComboBox.addItem("id");
-        for(int i = 0; i < ids.size() - 1;i++){
+        for(int i = 0; i < ids.size();i++){
             idsComboBox.addItem(ids.get(i).toString());
         }
 
