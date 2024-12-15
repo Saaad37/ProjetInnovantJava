@@ -123,10 +123,13 @@ public class WindowPanel extends JPanel implements Runnable {
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (windowThread == null) {
+                if(profileSelected && windowThread == null){
                     startThread();
                     paused = false;
                     stopped = false;
+                }else if(!profileSelected){
+                    ErrorDialogBox e1 = new ErrorDialogBox("Select a profile.");
+                    e1.setVisible(true);
                 }
                 System.out.println(paused + " " + stopped );
             }
@@ -147,17 +150,28 @@ public class WindowPanel extends JPanel implements Runnable {
 
         pauseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                stopThread();
-                paused = true;
-                stopped = false;
+                if(profileSelected){
+                    stopThread();
+                    paused = true;
+                    stopped = false;
+                }else{
+                    ErrorDialogBox er = new ErrorDialogBox("Select a user please.");
+                    er.setVisible(true);
+                }
                 System.out.println(paused + " " + stopped );
             }
         });
 
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                stopThread();
-                resetValues();
+                if(profileSelected && windowThread != null){
+                    stopThread();
+                    resetValues();
+                    stopped = true;
+                }else if(!profileSelected){
+                    ErrorDialogBox err = new ErrorDialogBox("Select a user please.");
+                    err.setVisible(true);
+                }
                 System.out.println(paused + " " + stopped );
             }
         });
@@ -236,8 +250,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.setLayout(null);
         this.setPreferredSize(new Dimension(winWidth, winHeight));
 
-        setTestingState();
-
+        this.setBackground(bgColor);
 
         this.add(subroticLogo);
         this.add(pressureTxt);
@@ -441,12 +454,15 @@ public class WindowPanel extends JPanel implements Runnable {
 
 
     public void setTestingState(){
-        if(testing){
+        if(testing && profileSelected){
             testingButton.setText("Stop Testing");
             setBackground(Color.RED);
-        }else{
+        }else if (!testing && profileSelected){
             testingButton.setText("Start Testing");
             setBackground(bgColor);
+        }else {
+            ErrorDialogBox e = new ErrorDialogBox("Select a user.");
+            e.setVisible(true);
         }
     }
 

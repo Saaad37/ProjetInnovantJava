@@ -10,7 +10,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedInputStream;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -31,7 +30,8 @@ public class DBManager {
     components.Button addButton;
     components.Button delButton;
     components.Button updateButton;
-    JButton searchButton;
+    components.Button useButton;
+    components.Button searchButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
 
@@ -148,6 +148,7 @@ public class DBManager {
         addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
         updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update");
         delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete");
+
         searchButton = new Button(new Rectangle(290, 100, 80, 35), "Search");
 
 
