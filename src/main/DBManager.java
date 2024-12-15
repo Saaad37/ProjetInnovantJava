@@ -147,7 +147,8 @@ public class DBManager {
         lastNameField = new JTextField();
         addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
         updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update");
-        searchButton = new Button(new Rectangle(200, 100, 80, 35), "Search");
+        delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete");
+        searchButton = new Button(new Rectangle(290, 100, 80, 35), "Search");
 
 
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -298,8 +299,9 @@ public class DBManager {
         f.add(lastNameTxt);
         f.add(addButton);
         f.add(idsComboBox);
-        f.add(searchButton);
         f.add(updateButton);
+        f.add(delButton);
+        f.add(searchButton);
 
         f.pack();
     }
