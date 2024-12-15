@@ -222,11 +222,8 @@ public class DBManager {
 
         updateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if(table.getSelectedRow() < 0){
-                    ErrorDialogBox e = new ErrorDialogBox("Select a user before updating");
-                    e.setVisible(true);
-                }else{
-                    int uuid = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+                    int uuid = getUserId();
+                    if(uuid == 0 ) return;
                     System.out.println(uuid);
                     String firstName = firstNameField.getText();
                     String lastName = lastNameField.getText();
@@ -235,7 +232,12 @@ public class DBManager {
 
                     firstNameField.setText("");
                     lastNameField.setText("");
-                }
+            }
+        });
+
+        delButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+
             }
         });
 
@@ -427,6 +429,16 @@ public class DBManager {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private int getUserId(){
+        if(table.getSelectedRow() < 0){
+            ErrorDialogBox e = new ErrorDialogBox("Please Select a user..");
+            e.setVisible(true);
+            return 0;
+        }else{
+            return Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+        }
     }
 
 
