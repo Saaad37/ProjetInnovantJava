@@ -260,6 +260,7 @@ public class DBManager {
                 setUserID(uuid);
                 setMaxValN2(Integer.parseInt(getProfile(uuid).getLast()));
                 wp.clearSavedDepth();
+                wp.setTesting(false);
                 System.out.println(getMaxDepth() + " " + getMaxValN2());
                 isProfileOpened = false;
                 f.dispose();
@@ -482,7 +483,7 @@ public class DBManager {
         setProfileOpened(true);
     }
 
-    private void changeMaxDepth(int uuid ,double maxDepth){
+    public void changeMaxDepth(int uuid ,double maxDepth){
         try {
             Statement stmt = con.createStatement();
             stmt.executeUpdate("UPDATE " + tableName + " SET maxDepth=" + maxDepth + " WHERE uuid="+ uuid  );

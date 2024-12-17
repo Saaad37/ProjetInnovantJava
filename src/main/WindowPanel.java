@@ -63,8 +63,9 @@ public class WindowPanel extends JPanel implements Runnable {
     Button stopButton = new Button(new Rectangle(200, 500, 80, 35), "Stop");
     Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause");
     Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test");
-    Button saveTesting = new Button(new Rectangle(280, 550, 100, 35), "Save Tests");
+    Button saveTesting = new Button(new Rectangle(200, 550, 100, 35), "Save Tests");
     Button manageProfiles = new Button(new Rectangle(230, 380, 150, 35), "Manage Profiles");
+    Button applyChanges = new Button(new Rectangle(320, 550, 100, 35), "Apply changes");
 
     int userId;
 
@@ -218,6 +219,24 @@ public class WindowPanel extends JPanel implements Runnable {
             }
         });
 
+
+        applyChanges.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if(!testing || maxDepthTest.isEmpty() || (!paused && !stopped)){
+                    ErrorDialogBox e = new ErrorDialogBox("Can't apply changes");
+                    e.setVisible(true);
+                }else{
+                    double m = 0;
+                    for(double mv : maxDepthTest){
+                        m += mv;
+                    }
+                    m = m/maxDepthTest.size();
+                    db.changeMaxDepth(userId, m);
+                }
+
+            }
+        });
+
         frameCounter = 0;
 
         pressureTxt.setFont(font);
@@ -267,6 +286,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(testingButton);
         this.add(saveTesting);
         this.add(manageProfiles);
+        this.add(applyChanges);
     }
 
     // Commencer le thread
