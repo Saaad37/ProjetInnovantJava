@@ -259,6 +259,8 @@ public class DBManager {
                 if(uuid == 0) return;
                 setUserID(uuid);
                 setMaxValN2(Integer.parseInt(getProfile(uuid).getLast()));
+                wp.clearSavedDepth();
+                System.out.println(getMaxDepth() + " " + getMaxValN2());
                 isProfileOpened = false;
                 f.dispose();
             }
@@ -465,6 +467,14 @@ public class DBManager {
 
     public void setMaxDepth(int maxDepth){
         wp.maxDepth = maxDepth;
+    }
+
+    public double getMaxDepth(){
+        return wp.maxDepth;
+    }
+
+    public double getMaxValN2(){
+        return wp.maxValN2;
     }
 
     public void setUserID(int uuid){

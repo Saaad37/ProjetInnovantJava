@@ -126,6 +126,7 @@ public class WindowPanel extends JPanel implements Runnable {
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(profileSelected && windowThread == null){
+                    maxDepth = Double.parseDouble(db.getProfile(userId).getLast());
                     startThread();
                     paused = false;
                     stopped = false;
@@ -206,8 +207,10 @@ public class WindowPanel extends JPanel implements Runnable {
                 }else if((!paused && !stopped)){
                     maxDepthTest.add(savedValues.getLast()[0]);
                     setMaxDepth();
+                    System.out.println(maxDepth + " " + maxValN2);
                     stopThread();
                     resetValues();
+                    System.out.println(maxDepthTest.toString());
                 }else{
                     ErrorDialogBox e = new ErrorDialogBox("Nothing to save start a new session..");
                     e.setVisible(true);
@@ -475,14 +478,16 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public void setMaxDepth() {
         int m = 0;
-        for(int i = 0;i < maxDepthTest.size();i++){
-            m += maxDepthTest.get(i);
+        for (Double mv : maxDepthTest) {
+            m += mv;
         }
-        this.maxDepth = m/maxDepthTest.size();
+        this.maxDepth = (double) m /maxDepthTest.size();
+        setMaxValN2();
     }
 
-    public void setMaxValN2(double maxValN2) {
-        this.maxValN2 = maxValN2;
+    public void setMaxValN2() {
+        double Pmax = (P0Pasc + (rhoSaltedWater * g * this.maxDepth));
+        this.maxValN2 = (Pmax / 133) * XN2;
     }
 
     public boolean isProfileSelected() {
@@ -495,6 +500,10 @@ public class WindowPanel extends JPanel implements Runnable {
 
     public ArrayList<Double[]> getSavedValues() {
         return savedValues;
+    }
+
+    public void clearSavedDepth(){
+        maxDepthTest.clear();
     }
 
     public WindowPanel getWp(){
