@@ -32,6 +32,7 @@ public class DBManager {
     components.Button updateButton;
     components.Button useButton;
     components.Button searchButton;
+    components.Button rollbackButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
 
@@ -41,6 +42,7 @@ public class DBManager {
         totalData = new ArrayList<>();
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
+            con.setAutoCommit(false);
             System.out.println("Connection Established successfully !");
             fetchUsers();
             printAllUsers();
@@ -136,209 +138,224 @@ public class DBManager {
 
     public void initComponents() {
 
-        f = new Window("Users");
-        isProfileOpened = true;
-        jScrollPane1 = new JScrollPane();
-        table = new JTable();
-        idsComboBox = new JComboBox<>();
-        JLabel firstNameTxt = new JLabel("First name:");
-        JLabel lastNameTxt = new JLabel("Last name:");
-        firstNameField = new JTextField();
-        lastNameField = new JTextField();
-        addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
-        updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update");
-        delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete");
-        useButton = new Button(new Rectangle(290, 100, 80, 35), "Use");
-        searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search");
+            f = new Window("Users");
+            isProfileOpened = true;
+            jScrollPane1 = new JScrollPane();
+            table = new JTable();
+            idsComboBox = new JComboBox<>();
+            JLabel firstNameTxt = new JLabel("First name:");
+            JLabel lastNameTxt = new JLabel("Last name:");
+            firstNameField = new JTextField();
+            lastNameField = new JTextField();
+            addButton = new Button(new Rectangle(40, 100, 60, 35), "Add");
+            updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update");
+            delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete");
+            useButton = new Button(new Rectangle(290, 100, 80, 35), "Use");
+            searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search");
+            rollbackButton = new Button(new Rectangle(300, 5, 30, 20), "r");
 
 
-        f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        f.addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent windowEvent) {}
-            @Override
-            public void windowClosing(WindowEvent e) {
-                isProfileOpened = false;
-                e.getWindow().dispose();
-            }
-            @Override
-            public void windowClosed(WindowEvent windowEvent) {}
-            @Override
-            public void windowIconified(WindowEvent windowEvent) {}
-            @Override
-            public void windowDeiconified(WindowEvent windowEvent) {}
-            @Override
-            public void windowActivated(WindowEvent windowEvent) {}
-            @Override
-            public void windowDeactivated(WindowEvent windowEvent) {}
-        });
-        f.setPreferredSize(new Dimension(500, 480));
-        f.setAlwaysOnTop(true);
-        System.out.println(isProfileOpened);
-
-
-        idsComboBox.setBounds(new Rectangle(350, 20, 100, 35));
-        firstNameTxt.setBounds(new Rectangle(10, 20, 180, 35));
-        lastNameTxt.setBounds(new Rectangle(10, 60, 180, 35));
-        firstNameField.setBounds(new Rectangle(100, 20, 200 ,35));
-        lastNameField.setBounds(new Rectangle(100, 60, 200, 35));
-
-        loadIds();
-
-        addButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                String firstName = firstNameField.getText();
-                String lastName = lastNameField.getText();
-                if(firstName.isBlank() || lastName.isBlank()){
-                    ErrorDialogBox d = new ErrorDialogBox("You must enter a first name and a last name");
-                    d.setVisible(true);
-                    firstNameField.setText("");
-                    lastNameField.setText("");
-                }else if(!idsComboBox.getSelectedItem().equals("id")){
-                    ErrorDialogBox e = new ErrorDialogBox("Unselect id please.");
-                    e.setVisible(true);
+            f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            f.addWindowListener(new WindowListener() {
+                @Override
+                public void windowOpened(WindowEvent windowEvent) {}
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    isProfileOpened = false;
+                    e.getWindow().dispose();
                 }
-                else{
-                    insertUser(generateUUID(), firstName, lastName);
-                    System.out.println("User added sucessefully !");
-                    firstNameField.setText("");
-                    lastNameField.setText("");
-                    loadIds();
-                    updateTable();
-                }
-            }
-        });
+                @Override
+                public void windowClosed(WindowEvent windowEvent) {}
+                @Override
+                public void windowIconified(WindowEvent windowEvent) {}
+                @Override
+                public void windowDeiconified(WindowEvent windowEvent) {}
+                @Override
+                public void windowActivated(WindowEvent windowEvent) {}
+                @Override
+                public void windowDeactivated(WindowEvent windowEvent) {}
+            });
+            f.setPreferredSize(new Dimension(500, 480));
+            f.setAlwaysOnTop(true);
+            System.out.println(isProfileOpened);
 
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String selectedId = idsComboBox.getSelectedItem().toString();
-                String firstName = firstNameField.getText();
-                String lastName = lastNameField.getText();
-                if(selectedId.equals("id") && firstName.isBlank() && lastName.isBlank() ) {
-                    updateTable();
-                }else if(!selectedId.equals("id")){
-                    searchedTable(Integer.parseInt(selectedId));
-                }else{
-                    searchedTable(firstName, lastName);
-                }
-            }
-        });
 
-        updateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                    int uuid = getUserId();
-                    if(uuid == 0 ) return;
-                    System.out.println(uuid);
+            idsComboBox.setBounds(new Rectangle(350, 20, 100, 35));
+            firstNameTxt.setBounds(new Rectangle(10, 20, 180, 35));
+            lastNameTxt.setBounds(new Rectangle(10, 60, 180, 35));
+            firstNameField.setBounds(new Rectangle(100, 20, 200 ,35));
+            lastNameField.setBounds(new Rectangle(100, 60, 200, 35));
+
+
+            loadIds();
+
+            addButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
                     String firstName = firstNameField.getText();
                     String lastName = lastNameField.getText();
-                    updateUser(uuid, firstName, lastName);
+                    if(firstName.isBlank() || lastName.isBlank()){
+                        ErrorDialogBox d = new ErrorDialogBox("You must enter a first name and a last name");
+                        d.setVisible(true);
+                        firstNameField.setText("");
+                        lastNameField.setText("");
+                    }else if(!idsComboBox.getSelectedItem().equals("id")){
+                        ErrorDialogBox e = new ErrorDialogBox("Unselect id please.");
+                        e.setVisible(true);
+                    }
+                    else{
+                        insertUser(generateUUID(), firstName, lastName);
+                        System.out.println("User added sucessefully !");
+                        firstNameField.setText("");
+                        lastNameField.setText("");
+                        loadIds();
+                        updateTable();
+                    }
+                }
+            });
+
+            searchButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    String selectedId = idsComboBox.getSelectedItem().toString();
+                    String firstName = firstNameField.getText();
+                    String lastName = lastNameField.getText();
+                    if(selectedId.equals("id") && firstName.isBlank() && lastName.isBlank() ) {
+                        updateTable();
+                    }else if(!selectedId.equals("id")){
+                        searchedTable(Integer.parseInt(selectedId));
+                    }else{
+                        searchedTable(firstName, lastName);
+                    }
+                }
+            });
+
+            updateButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                        int uuid = getUserId();
+                        if(uuid == 0 ) return;
+                        System.out.println(uuid);
+                        String firstName = firstNameField.getText();
+                        String lastName = lastNameField.getText();
+                        updateUser(uuid, firstName, lastName);
+                        updateTable();
+
+                        firstNameField.setText("");
+                        lastNameField.setText("");
+                }
+            });
+
+            delButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    int uuid = getUserId();
+                    if(uuid == 0) return;
+                    deleteUser(uuid);
                     updateTable();
+                    loadIds();
 
                     firstNameField.setText("");
                     lastNameField.setText("");
-            }
-        });
+                }
+            });
 
-        delButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                int uuid = getUserId();
-                if(uuid == 0) return;
-                deleteUser(uuid);
-                updateTable();
-                loadIds();
+            useButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    int uuid = getUserId();
+                    if(uuid == 0) return;
+                    setUserID(uuid);
+                    setMaxValN2(Integer.parseInt(getProfile(uuid).getLast()));
+                    wp.clearSavedDepth();
+                    wp.setTesting(false);
+                    System.out.println(getMaxDepth() + " " + getMaxValN2());
+                    isProfileOpened = false;
+                    f.dispose();
+                }
+            });
 
-                firstNameField.setText("");
-                lastNameField.setText("");
-            }
-        });
-
-        useButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                int uuid = getUserId();
-                if(uuid == 0) return;
-                setUserID(uuid);
-                setMaxValN2(Integer.parseInt(getProfile(uuid).getLast()));
-                wp.clearSavedDepth();
-                wp.setTesting(false);
-                System.out.println(getMaxDepth() + " " + getMaxValN2());
-                isProfileOpened = false;
-                f.dispose();
-            }
-        });
-
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if(!e.getValueIsAdjusting()){
-                    int r = table.getSelectedRow();
-                        if(r >= 0){
-                            System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
-                            int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
-
-                            firstNameField.setText(getProfile(uuid).get(0));
-                            lastNameField.setText(getProfile(uuid).get(1));
+            rollbackButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    try {
+                        con.rollback();
+                        updateTable();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
-
                 }
-            }
-        });
+            });
 
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e) {
+                    if(!e.getValueIsAdjusting()){
+                        int r = table.getSelectedRow();
+                            if(r >= 0){
+                                System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
+                                int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
 
-        table.setModel(new DefaultTableModel(
-                new Object [][] {
+                                firstNameField.setText(getProfile(uuid).get(0));
+                                lastNameField.setText(getProfile(uuid).get(1));
+                        }
 
-                },
-                new String [] {
-                        "UUID", "First Name", "Last Name", "Date Created", "Max Depth"
+                    }
                 }
-        ){
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-        });
-
-        table.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        table.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
-        table.setFillsViewportHeight(true);
-        jScrollPane1.setViewportView(table);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            });
 
 
-        GroupLayout layout = new GroupLayout(f.getContentPane());
-        f.getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
-                                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(132, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 275, GroupLayout.PREFERRED_SIZE)
-                                .addGap(19, 19, 19))
-        );
+            table.setModel(new DefaultTableModel(
+                    new Object [][] {
 
-        f.add(firstNameField);
-        f.add(lastNameField);
-        f.add(firstNameTxt);
-        f.add(lastNameTxt);
-        f.add(addButton);
-        f.add(idsComboBox);
-        f.add(updateButton);
-        f.add(delButton);
-        f.add(useButton);
-        f.add(searchButton);
+                    },
+                    new String [] {
+                            "UUID", "First Name", "Last Name", "Date Created", "Max Depth"
+                    }
+            ){
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                    return false;
+                }
+            });
 
-        f.pack();
+            table.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            table.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
+            table.setFillsViewportHeight(true);
+            jScrollPane1.setViewportView(table);
+            table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+
+            GroupLayout layout = new GroupLayout(f.getContentPane());
+            f.getContentPane().setLayout(layout);
+            layout.setHorizontalGroup(
+                    layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
+                                    .addContainerGap())
+            );
+            layout.setVerticalGroup(
+                    layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addContainerGap(132, Short.MAX_VALUE)
+                                    .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 275, GroupLayout.PREFERRED_SIZE)
+                                    .addGap(19, 19, 19))
+            );
+
+            f.add(firstNameField);
+            f.add(lastNameField);
+            f.add(firstNameTxt);
+            f.add(lastNameTxt);
+            f.add(addButton);
+            f.add(idsComboBox);
+            f.add(updateButton);
+            f.add(delButton);
+            f.add(useButton);
+            f.add(searchButton);
+            f.add(rollbackButton);
+
+            f.pack();
     }
 
     private void deleteUser(int uuid) {
         try {
             PreparedStatement pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE uuid=" + uuid);
             pst.executeUpdate();
+            con.commit();
             pst.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -391,6 +408,7 @@ public class DBManager {
             PreparedStatement pst  = con.prepareStatement("UPDATE users SET first_name='" + firstName + "', last_name='" + lastName + "' WHERE uuid=" + uuid);
             // UPDATE users SET first_name='firstName', last_name='lastName' WHERE uuid=uuid;
             pst.executeUpdate();
+            con.commit();
             pst.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -446,6 +464,7 @@ public class DBManager {
             stmt.executeUpdate("INSERT INTO " + tableName + "(uuid, first_name, last_name) " +
                     "VALUES(" + uuid + ", '" + firstName + "', '" + lastName + "')");
             // INSERT INTO users(uuid, first_name, last_name) VALUES(uuid, 'first_name','last_name');
+            con.commit();
             stmt.close();
         } catch (SQLException e) {
             throw  new RuntimeException(e);
@@ -487,6 +506,7 @@ public class DBManager {
         try {
             Statement stmt = con.createStatement();
             stmt.executeUpdate("UPDATE " + tableName + " SET maxDepth=" + maxDepth + " WHERE uuid="+ uuid  );
+            con.commit();
             stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
