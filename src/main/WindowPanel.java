@@ -222,7 +222,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
         applyChanges.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                if(!testing || maxDepthTest.isEmpty() || (!paused && !stopped)){
+                if(!testing || maxDepthTest.size() < 5 || (!paused && !stopped)){
                     ErrorDialogBox e = new ErrorDialogBox("Can't apply changes");
                     e.setVisible(true);
                 }else{
