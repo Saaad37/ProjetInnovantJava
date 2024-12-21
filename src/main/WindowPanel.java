@@ -266,7 +266,7 @@ public class WindowPanel extends JPanel implements Runnable {
         depthTxt.setBounds(new Rectangle(50, 250, 720, 50));
         pressureTxt.setBounds(new Rectangle(50, 300, 720, 50));
         savedText.setBounds(new Rectangle(10, 425, 720, 50));
-        timerTxt.setBounds(new Rectangle(600, 10, 100, 50));
+        timerTxt.setBounds(new Rectangle(600, 550, 100, 50));
 
         subroticIcon.setImage(
                 resizeImage(subroticIcon, subroticLogo.getBounds().width,
