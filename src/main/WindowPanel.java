@@ -86,6 +86,7 @@ public class WindowPanel extends JPanel implements Runnable {
     Color bgColor = new Color(34, 48, 97);
     Color defaultColor = Color.WHITE;
     ImageIcon subroticIcon = new ImageIcon(this.getClass().getResource("/assets/subrotic.jpg"));
+    ImageIcon diverIcon = new ImageIcon(this.getClass().getResource("/assets/diver.png"));
 
     /*
      * Initialisation des texte qui vont apparaître sur la fenêtre
@@ -97,6 +98,7 @@ public class WindowPanel extends JPanel implements Runnable {
     JLabel depthTxt = new JLabel();
     JLabel savedText = new JLabel();
     JLabel subroticLogo = new JLabel();
+    JLabel diverPhoto = new JLabel();
     JLabel timerTxt = new JLabel();
 
     String N2Warning;
@@ -246,6 +248,8 @@ public class WindowPanel extends JPanel implements Runnable {
         savedText.setFont(font);
         timerTxt.setFont(font);
         subroticLogo.setIcon(subroticIcon);
+        diverPhoto.setIcon(diverIcon);
+
 
         pressureTxt.setForeground(defaultColor);
         PaN2Txt.setForeground(defaultColor);
@@ -256,6 +260,7 @@ public class WindowPanel extends JPanel implements Runnable {
 
         // Donner un rectangle comme limite de textes
         subroticLogo.setBounds(new Rectangle(20, 20, 125, 125));
+        diverPhoto.setBounds(new Rectangle(425, 50, 500, 400));
         PaN2Txt.setBounds(new Rectangle(50, 150, 720, 50));
         PaO2Txt.setBounds(new Rectangle(50, 200, 720, 50));
         depthTxt.setBounds(new Rectangle(50, 250, 720, 50));
@@ -264,7 +269,10 @@ public class WindowPanel extends JPanel implements Runnable {
         timerTxt.setBounds(new Rectangle(600, 10, 100, 50));
 
         subroticIcon.setImage(
-                resizeImage(subroticIcon, subroticLogo.getBounds().width, subroticLogo.getBounds().height).getImage());
+                resizeImage(subroticIcon, subroticLogo.getBounds().width,
+                        subroticLogo.getBounds().height).getImage());
+        diverIcon.setImage(resizeImage(diverIcon, diverPhoto.getBounds().width,
+                        diverPhoto.getBounds().height).getImage());
 
         // this veut dire cette classe JPanel
 
@@ -273,13 +281,17 @@ public class WindowPanel extends JPanel implements Runnable {
 
         this.setBackground(bgColor);
 
+        //Buttons
         this.add(subroticLogo);
+        this.add(diverPhoto);
+        // Texts
         this.add(pressureTxt);
         this.add(PaN2Txt);
         this.add(PaO2Txt);
         this.add(depthTxt);
         this.add(savedText);
         this.add(timerTxt);
+        //Buttons
         this.add(startButton);
         this.add(pauseButton);
         this.add(stopButton);
