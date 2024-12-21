@@ -201,6 +201,9 @@ public class DBManager {
                     }else if(!idsComboBox.getSelectedItem().equals("id")){
                         ErrorDialogBox e = new ErrorDialogBox("Unselect id please.");
                         e.setVisible(true);
+                    }else if(table.getSelectedRow() >= 1){
+                        ErrorDialogBox e = new ErrorDialogBox("Unselect row and enter first name and last name");
+                        e.setVisible(true);
                     }
                     else{
                         insertUser(generateUUID(), firstName, lastName);
@@ -374,8 +377,6 @@ public class DBManager {
         }
 
     }
-
-
     
     public ArrayList<String> getProfile(int uuid){
         try {
