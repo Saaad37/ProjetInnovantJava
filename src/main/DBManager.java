@@ -32,9 +32,9 @@ public class DBManager {
     components.Button updateButton;
     components.Button useButton;
     components.Button searchButton;
-    components.Button rollbackButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
+    KeyListener kl;
 
 
     public DBManager(WindowPanel wp){
@@ -152,7 +152,6 @@ public class DBManager {
             delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete");
             useButton = new Button(new Rectangle(290, 100, 80, 35), "Use");
             searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search");
-            rollbackButton = new Button(new Rectangle(300, 5, 30, 20), "r");
 
 
             f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -274,17 +273,6 @@ public class DBManager {
                 }
             });
 
-            rollbackButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent actionEvent) {
-                    try {
-                        con.rollback();
-                        updateTable();
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
                     if(!e.getValueIsAdjusting()){
@@ -349,7 +337,6 @@ public class DBManager {
             f.add(delButton);
             f.add(useButton);
             f.add(searchButton);
-            f.add(rollbackButton);
 
             f.pack();
     }
@@ -376,6 +363,26 @@ public class DBManager {
             idsComboBox.addItem(ids.get(i).toString());
         }
 
+    }
+
+    public void unselectRow(){
+        kl = new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                int code = e.getKeyCode();
+                if(code == KeyEvent.VK_ESCAPE || table.getSelectedRow() < 0){
+                    table.setSelectionModel(null);
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent keyEvent) {
+            }
+        };
     }
     
     public ArrayList<String> getProfile(int uuid){
