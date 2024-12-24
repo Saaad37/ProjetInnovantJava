@@ -14,9 +14,13 @@ public class Button extends JButton {
     private int radius = 0;
 
 
-    public Button(Rectangle bounds, String buttonName) {
+    public Button(Rectangle bounds, String buttonName, Color defaultColor, Color hoverColor) {
 
         this.setContentAreaFilled(false);
+
+        // Init colors;
+        setDefaultColor(defaultColor);
+        setHoverColor(hoverColor);
 
 
         this.setBounds(bounds);
@@ -42,11 +46,13 @@ public class Button extends JButton {
     }
 
     public Color getDefaultColor() {
+
         return defaultColor;
     }
 
     public void setDefaultColor(Color defaultColor) {
         this.defaultColor = defaultColor;
+        setBackground(defaultColor);
     }
 
     public Color getHoverColor() {
@@ -72,4 +78,21 @@ public class Button extends JButton {
     public void setRadius(int radius) {
         this.radius = radius;
     }
+
+    @Override
+    public void paintComponents(Graphics g){
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Painting borders;
+        g2.setColor(borderColor);
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
+        // Setting Borders to 2 pixels of width;
+        g2.setColor(getBackground());
+        g2.fillRoundRect(2,2,getWidth() - 4, getHeight() - 4, radius, radius);
+
+        super.paintComponents(g);
+
+    }
+
 }

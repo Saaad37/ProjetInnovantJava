@@ -34,6 +34,9 @@ public class WindowPanel extends JPanel implements Runnable {
     final int rhoSaltedWater = 1025; // kg/m3
     final double g = 9.81f; // m/s^2 ou N/Kg
     final String alarmPath = "/assets/alarm.wav";
+    final Color bgColor = new Color(34, 48, 97);
+    final Color defaultColor = Color.WHITE;
+    final Color onHoverColor = new Color(250, 152, 41);
 
     double pressureVal;
     double pressureValPasc;
@@ -59,13 +62,13 @@ public class WindowPanel extends JPanel implements Runnable {
 
     SoundSystem soundSys = new SoundSystem(alarmPath);
 
-    Button startButton = new Button(new Rectangle(70 , 500, 80, 35), "Start");
-    Button stopButton = new Button(new Rectangle(200, 500, 80, 35), "Stop");
-    Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause");
-    Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test");
-    Button saveTesting = new Button(new Rectangle(200, 550, 100, 35), "Save Tests");
-    Button manageProfiles = new Button(new Rectangle(230, 380, 150, 35), "Manage Profiles");
-    Button applyChanges = new Button(new Rectangle(320, 550, 100, 35), "Apply changes");
+    Button startButton = new Button(new Rectangle(70 , 500, 80, 35), "Start", defaultColor, onHoverColor);
+    Button stopButton = new Button(new Rectangle(200, 500, 80, 35), "Stop", defaultColor, onHoverColor);
+    Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause", defaultColor, onHoverColor);
+    Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test", defaultColor, onHoverColor);
+    Button saveTesting = new Button(new Rectangle(200, 550, 100, 35), "Save Tests", defaultColor, onHoverColor);
+    Button manageProfiles = new Button(new Rectangle(230, 380, 150, 35), "Manage Profiles", defaultColor, onHoverColor);
+    Button applyChanges = new Button(new Rectangle(320, 550, 120, 35), "Apply changes", defaultColor, onHoverColor);
 
     int userId;
 
@@ -83,8 +86,6 @@ public class WindowPanel extends JPanel implements Runnable {
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
     int minPassed;
     // l'index des valeurs sauvegardé
-    Color bgColor = new Color(34, 48, 97);
-    Color defaultColor = Color.WHITE;
     ImageIcon subroticIcon = new ImageIcon(this.getClass().getResource("/assets/subrotic.jpg"));
     ImageIcon diverIcon = new ImageIcon(this.getClass().getResource("/assets/diver.png"));
 
