@@ -19,8 +19,8 @@ import java.util.UUID;
 public class DBManager {
     static final String username = "root";
     static final String tableName = "users";
-    final Color defaultButCol = Color.LIGHT_GRAY;
-    final Color onHoverCol = Color.BLACK;
+    final Color defaultButCol = Color.WHITE;
+    final Color onHoverCol = Color.LIGHT_GRAY;
     Connection con;
     WindowPanel wp;
     JTable table;
