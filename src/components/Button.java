@@ -51,7 +51,7 @@ public class Button extends JButton {
             }
         });
 
-        this.setContentAreaFilled(false);
+//        this.setContentAreaFilled(false);
         this.setBounds(bounds);
         this.setText(buttonName);
         this.setFocusable(false);
@@ -108,18 +108,5 @@ public class Button extends JButton {
         this.radius = radius;
     }
 
-
-
-    public static void main(String[] args) {
-        JFrame f = new JFrame("Button test");
-        Button btn = new Button(new Rectangle(19,3494, 123,545), "myButton1", Color.CYAN, Color.BLACK);
-
-
-        f.setVisible(true);
-        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        f.add(btn);
-        f.setLayout(new FlowLayout());
-        f.pack();
-    }
 
 }
