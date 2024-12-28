@@ -67,8 +67,8 @@ public class WindowPanel extends JPanel implements Runnable {
     Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause", defaultColor, onHoverColor);
     Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test", defaultColor, onHoverColor);
     Button saveTesting = new Button(new Rectangle(200, 550, 100, 35), "Save Tests", defaultColor, onHoverColor);
-    Button manageProfiles = new Button(new Rectangle(230, 380, 150, 35), "Manage Profiles", defaultColor, onHoverColor);
-    Button applyChanges = new Button(new Rectangle(320, 550, 120, 35), "Apply changes", defaultColor, onHoverColor);
+    Button manageProfiles = new Button(new Rectangle(250, 380, 150, 35), "Manage Profiles", defaultColor, onHoverColor);
+    Button applyChanges = new Button(new Rectangle(320, 550, 135, 35), "Apply changes", defaultColor, onHoverColor);
 
     int userId;
 
