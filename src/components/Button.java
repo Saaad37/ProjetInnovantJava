@@ -1,8 +1,10 @@
 package components;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.JButton;
+import javax.swing.*;
 
 public class Button extends JButton {
 
@@ -16,13 +18,40 @@ public class Button extends JButton {
 
     public Button(Rectangle bounds, String buttonName, Color defaultColor, Color hoverColor) {
 
-        this.setContentAreaFilled(false);
-
         // Init colors;
         setDefaultColor(defaultColor);
         setHoverColor(hoverColor);
+        setBackground(getDefaultColor());
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setBackground(getHoverColor());
+                setHovering(true);
+            }
 
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setBackground(getDefaultColor());
+                setHovering(false);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                setBackground(getColorClick());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if(isHovering()){
+                    setBackground(getHoverColor());
+                }else{
+                    setBackground(getDefaultColor());
+                }
+            }
+        });
+
+        this.setContentAreaFilled(false);
         this.setBounds(bounds);
         this.setText(buttonName);
         this.setFocusable(false);
@@ -79,20 +108,18 @@ public class Button extends JButton {
         this.radius = radius;
     }
 
-    @Override
-    public void paintComponents(Graphics g){
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Painting borders;
-        g2.setColor(borderColor);
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-        // Setting Borders to 2 pixels of width;
-        g2.setColor(getBackground());
-        g2.fillRoundRect(2,2,getWidth() - 4, getHeight() - 4, radius, radius);
 
-        super.paintComponents(g);
+    public static void main(String[] args) {
+        JFrame f = new JFrame("Button test");
+        Button btn = new Button(new Rectangle(19,3494, 123,545), "myButton1", Color.CYAN, Color.BLACK);
 
+
+        f.setVisible(true);
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        f.add(btn);
+        f.setLayout(new FlowLayout());
+        f.pack();
     }
 
 }
