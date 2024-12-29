@@ -21,4 +21,9 @@ public class FileIO {
             }
         }
     }
+
+
+    private static String getOS(){
+        return System.getProperty("os.name");
+    }
 }
