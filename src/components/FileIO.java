@@ -6,6 +6,8 @@ import java.io.*;
 public class FileIO {
 
     BufferedReader br;
+    String username;
+    String password;
     public FileIO(String filePath){
         try {
             br = new BufferedReader(new FileReader(filePath));
@@ -22,6 +24,25 @@ public class FileIO {
         }
     }
 
+    public void readCreds(){
+        String line;
+        int lineCount = 0;
+        do {
+            try {
+                if ((line = br.readLine()) == null) break;
+                if (lineCount == 0) {
+                    this.username = line;
+                    System.out.println("username: " + username);
+                } else if (lineCount == 1) {
+                    this.password = line;
+                    System.out.println("password: " + password);
+                }
+                lineCount++;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } while (true);
+    }
 
     private static String getOS(){
         return System.getProperty("os.name");
