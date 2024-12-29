@@ -44,7 +44,7 @@ public class FileIO {
         } while (true);
     }
 
-    private static String getOS(){
+    public static String getOS(){
         return System.getProperty("os.name");
     }
 }
