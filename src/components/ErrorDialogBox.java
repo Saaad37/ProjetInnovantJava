@@ -17,7 +17,7 @@ public class ErrorDialogBox extends JDialog {
         Font font = new Font("Helvetica", Font.PLAIN, 20);
         errorLabel.setFont(font);
         Image icon = new ImageIcon(this.getClass().getResource("/assets/errorIcon.png")).getImage();
-        Button b = new Button(new Rectangle(45, 80, 80, 30), "Ok", Color.BLACK, Color.LIGHT_GRAY);
+        Button b = new Button(new Rectangle(45, 80, 80, 30), "Ok", Color.WHITE, Color.LIGHT_GRAY);
 
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
