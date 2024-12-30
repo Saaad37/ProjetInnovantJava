@@ -8,11 +8,11 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-
         if(FileIO.getOS().equalsIgnoreCase("Linux") && !(new File("/usr/SurveillanceSystem")).exists()){
             if(new File("/etc/SurveillanceSystem").mkdir()){
                 System.out.println("Directory successfully created");
-            }else{
+            }else if((new File("/usr/SurveillanceSystem").exists())) return;
+               else{
                 ErrorDialogBox e = new ErrorDialogBox("Permission denied: Run the program with sudo permissions.");
                 e.setVisible(true);
                 try {
