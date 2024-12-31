@@ -20,8 +20,8 @@ public class StopTestingDialog extends JDialog {
         Font font = new Font("Helvetica", Font.PLAIN, 20);
         errorLabel.setFont(font);
         Image icon = new ImageIcon(this.getClass().getResource("/assets/errorIcon.png")).getImage();
-        Button abort = new Button(new Rectangle(45, 80, 80, 30), "Abort", Color.BLACK, Color.LIGHT_GRAY);
-        Button lose = new Button(new Rectangle(99, 99, 99, 99), "I am Sure", Color.BLACK, Color.LIGHT_GRAY);
+        Button abort = new Button(new Rectangle(45, 80, 80, 30), "Abort", Color.BLACK, Color.LIGHT_GRAY, 0);
+        Button lose = new Button(new Rectangle(99, 99, 99, 99), "I am Sure", Color.BLACK, Color.LIGHT_GRAY,0);
         // The coordinates don't matter because i set up a layout
 
         soundSys.playSound(0);

@@ -37,6 +37,7 @@ public class WindowPanel extends JPanel implements Runnable {
     final Color bgColor = new Color(34, 48, 97);
     final Color defaultColor = Color.WHITE;
     final Color onHoverColor = new Color(250, 152, 41);
+    final int buttonRadius = 20;
 
     double pressureVal;
     double pressureValPasc;
@@ -62,13 +63,13 @@ public class WindowPanel extends JPanel implements Runnable {
 
     SoundSystem soundSys = new SoundSystem(alarmPath);
 
-    Button startButton = new Button(new Rectangle(70 , 500, 80, 35), "Start", defaultColor, onHoverColor);
-    Button stopButton = new Button(new Rectangle(200, 500, 80, 35), "Stop", defaultColor, onHoverColor);
-    Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause", defaultColor, onHoverColor);
-    Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test", defaultColor, onHoverColor);
-    Button saveTesting = new Button(new Rectangle(200, 550, 100, 35), "Save Tests", defaultColor, onHoverColor);
-    Button manageProfiles = new Button(new Rectangle(250, 380, 150, 35), "Manage Profiles", defaultColor, onHoverColor);
-    Button applyChanges = new Button(new Rectangle(320, 550, 135, 35), "Apply changes", defaultColor, onHoverColor);
+    Button startButton = new Button(new Rectangle(70 , 500, 80, 35), "Start", defaultColor, onHoverColor, buttonRadius);
+    Button stopButton = new Button(new Rectangle(200, 500, 80, 35), "Stop", defaultColor, onHoverColor, buttonRadius);
+    Button pauseButton = new Button(new Rectangle(330, 500, 80, 35), "Pause", defaultColor, onHoverColor, buttonRadius);
+    Button testingButton = new Button(new Rectangle(460, 500, 125, 35), "Start Test", defaultColor, onHoverColor, buttonRadius);
+    Button saveTesting = new Button(new Rectangle(200, 550, 100, 35), "Save Tests", defaultColor, onHoverColor, buttonRadius);
+    Button manageProfiles = new Button(new Rectangle(250, 380, 150, 35), "Manage Profiles", defaultColor, onHoverColor, buttonRadius);
+    Button applyChanges = new Button(new Rectangle(320, 550, 135, 35), "Apply changes", defaultColor, onHoverColor, buttonRadius);
 
     int userId;
 
