@@ -4,6 +4,9 @@ import main.WindowPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class EnterCredsBox extends JFrame {
 
@@ -11,13 +14,20 @@ public class EnterCredsBox extends JFrame {
     JPasswordField password;
     ImageIcon user = new ImageIcon(this.getClass().getResource("/assets/user.png"));
     ImageIcon pass = new ImageIcon(this.getClass().getResource("/assets/password.png"));
+    components.Button b;
+    String root;
+    String encryptedPassword;
 
     public EnterCredsBox(){
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(720, 480));
+        this.setPreferredSize(new Dimension(720, 420));
         this.setLocationRelativeTo(null);
         this.setTitle("Enter Credentials");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setResizable(false);
+
+        b = new Button(new Rectangle(300, 320, 120, 50), "Enter", Color.WHITE
+                ,Color.LIGHT_GRAY);
 
         user.setImage(WindowPanel.resizeImage(user, 25, 25).getImage());
         JLabel userL = new JLabel(user);
@@ -39,28 +49,31 @@ public class EnterCredsBox extends JFrame {
         password.setFont(new Font("Arial", Font.PLAIN, 20));
         password.setBounds(120, 200, 500, 35);
 
+        b.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                setRoot(username.getText());
+                System.out.println("root: " + getRoot());
+                System.out.println("password: " + getPassword());
+            }
+        });
+
 
         this.add(l);
         this.add(userL);
         this.add(passL);
         this.add(username);
         this.add(password);
+        this.add(b);
 
         this.pack();
     }
 
 
-    public String getUsername(){
-        return username.getText();
-    }
+    public String getPassword(){return new String(password.getPassword());}
 
-    public char[] getPassword(){
-        return password.getPassword();
-    }
+    public String getRoot(){return root;}
 
-    public static void main(String[] args) {
-        EnterCredsBox e = new EnterCredsBox();
-        e.setVisible(true);
-    }
+    public void setRoot(String root) {this.root = root;}
 
 }
