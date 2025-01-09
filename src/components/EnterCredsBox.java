@@ -91,5 +91,7 @@ public class EnterCredsBox extends JFrame {
 
     public String getRoot(){return root;}
 
+    //TODO Write in file encrypted password and root.
+
     public void setRoot(String root) {this.root = root;}
 }
