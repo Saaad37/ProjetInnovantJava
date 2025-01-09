@@ -92,10 +92,4 @@ public class EnterCredsBox extends JFrame {
     public String getRoot(){return root;}
 
     public void setRoot(String root) {this.root = root;}
-
-
-    public static void main(String[] args) {
-        EnterCredsBox e = new EnterCredsBox();
-        e.setVisible(true);
-    }
 }
