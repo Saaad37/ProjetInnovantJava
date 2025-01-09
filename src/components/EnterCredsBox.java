@@ -15,11 +15,13 @@ public class EnterCredsBox extends JFrame {
         l.setFont(new Font("Helvetica", Font.PLAIN, 26));
 
         JTextField username = new JTextField();
+        username.setPreferredSize(new Dimension(120, 30));
 
 
 
         this.add(l);
         this.add(username);
+
         this.pack();
     }
 
