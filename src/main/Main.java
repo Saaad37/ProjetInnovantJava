@@ -24,7 +24,7 @@ public class Main {
                     try {
                         e.wait(2500);
                     } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
+                        ex.printStackTrace();
                     }
                     System.exit(0);
                 }
@@ -42,7 +42,7 @@ public class Main {
                         try {
                             e.wait(2500);
                         } catch (InterruptedException ex) {
-                            throw new RuntimeException(ex);
+                            ex.printStackTrace();
                         }
                         System.exit(0);
                     }
