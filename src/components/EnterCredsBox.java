@@ -10,6 +10,7 @@ public class EnterCredsBox extends JFrame {
     JTextField username;
     JPasswordField password;
     ImageIcon user = new ImageIcon(this.getClass().getResource("/assets/user.png"));
+    ImageIcon pass = new ImageIcon(this.getClass().getResource("/assets/password.png"));
 
     public EnterCredsBox(){
         this.setLayout(null);
@@ -21,6 +22,10 @@ public class EnterCredsBox extends JFrame {
         user.setImage(WindowPanel.resizeImage(user, 25, 25).getImage());
         JLabel userL = new JLabel(user);
         userL.setBounds(85, 125, 25, 25);
+
+        pass.setImage(WindowPanel.resizeImage(pass, 25, 25).getImage());
+        JLabel passL = new JLabel(pass);
+        passL.setBounds(85, 205, 25, 25);
 
         JLabel l = new JLabel("Enter your MySQL username and password", SwingConstants.CENTER);
         l.setBounds(55, 25, 600, 50);
@@ -37,6 +42,7 @@ public class EnterCredsBox extends JFrame {
 
         this.add(l);
         this.add(userL);
+        this.add(passL);
         this.add(username);
         this.add(password);
 
