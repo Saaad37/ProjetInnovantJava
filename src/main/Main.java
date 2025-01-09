@@ -48,6 +48,7 @@ public class Main {
                     }
                 }
         }
+        // TODO Mac OS X condition.
 
         window.add(wp);
 
