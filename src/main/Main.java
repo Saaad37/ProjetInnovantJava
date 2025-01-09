@@ -19,7 +19,7 @@ public class Main {
                 if(dir.mkdir()){
                     System.out.println("Directory created successfully.");
                 }else{
-                    ErrorDialogBox e = new ErrorDialogBox("Cannot created the file");
+                    ErrorDialogBox e = new ErrorDialogBox("Cannot created the directory");
                     e.setVisible(true);
                     try {
                         e.wait(2500);
@@ -29,6 +29,24 @@ public class Main {
                     System.exit(0);
                 }
             }
+        }else if(FileIO.getOS().equalsIgnoreCase("Windows 10") ||
+                FileIO.getOS().equalsIgnoreCase("Windows 11")){
+                String dirPath = "C:\\Users\\" + name + "\\SurveillanceSystem";
+                File dir = new File(dirPath);
+                if(!dir.exists()){
+                    if(dir.mkdir()){
+                        System.out.println("Directory created successfully.");
+                    }else{
+                        ErrorDialogBox e = new ErrorDialogBox("Cannot create the directory");
+                        e.setVisible(true);
+                        try {
+                            e.wait(2500);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        System.exit(0);
+                    }
+                }
         }
 
         window.add(wp);
