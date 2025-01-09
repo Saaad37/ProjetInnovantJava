@@ -1,5 +1,6 @@
 package main;
 
+import components.EnterCredsBox;
 import components.ErrorDialogBox;
 import components.FileIO;
 import components.Window;
@@ -8,9 +9,6 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        WindowPanel wp = new WindowPanel();
-        Window window = new Window("Surveillance System");
-
         String name = System.getProperty("user.name");
         if(FileIO.getOS().equalsIgnoreCase("Linux")){
             String dirPath = "/home/" + name + "/SurveillanceSystem";
@@ -18,6 +16,13 @@ public class Main {
             if(!dir.exists()){
                 if(dir.mkdir()){
                     System.out.println("Directory created successfully.");
+                    EnterCredsBox ecb = new EnterCredsBox();
+                    ecb.setVisible(true);
+                    FileIO creds = new FileIO(dirPath + "/creds.txt");
+                    while(ecb.isbClicked()){
+                        creds.writeCreds(ecb);
+                    }
+
                 }else{
                     ErrorDialogBox e = new ErrorDialogBox("Cannot created the directory");
                     e.setVisible(true);
@@ -49,6 +54,12 @@ public class Main {
                 }
         }
         // TODO Mac OS X condition.
+
+    }
+
+    private void startProg(){
+        WindowPanel wp = new WindowPanel();
+        Window window = new Window("Surveillance System");
 
         window.add(wp);
 
