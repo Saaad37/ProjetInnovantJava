@@ -7,7 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class EnterCredsBox extends JFrame {
 
@@ -19,6 +20,7 @@ public class EnterCredsBox extends JFrame {
     String root;
     String encryptedPassword;
     JFrame f = this;
+    boolean bClicked;
 
     public EnterCredsBox(){
         this.setLayout(null);
@@ -27,6 +29,7 @@ public class EnterCredsBox extends JFrame {
         this.setTitle("Enter Credentials");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setResizable(false);
+        bClicked = false;
 
         b = new Button(new Rectangle(300, 320, 120, 50), "Enter", Color.WHITE
                 ,Color.LIGHT_GRAY);
@@ -54,6 +57,7 @@ public class EnterCredsBox extends JFrame {
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                bClicked = true;
                 setRoot(username.getText());
                 System.out.println("root: " + getRoot());
                 System.out.println("password: " + getPassword());
@@ -68,13 +72,31 @@ public class EnterCredsBox extends JFrame {
                     } catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
-                    e.dispose();
                     username.setText("");
                     password.setText("");
+                    e.dispose();
                 }
             }
         });
 
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent windowEvent) {}
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                bClicked = false;
+            }
+            @Override
+            public void windowClosed(WindowEvent windowEvent) {}
+            @Override
+            public void windowIconified(WindowEvent windowEvent) {}
+            @Override
+            public void windowDeiconified(WindowEvent windowEvent) {}
+            @Override
+            public void windowActivated(WindowEvent windowEvent) {}
+            @Override
+            public void windowDeactivated(WindowEvent windowEvent) {}
+        });
 
         this.add(l);
         this.add(userL);
@@ -92,6 +114,8 @@ public class EnterCredsBox extends JFrame {
     public String getRoot(){return root;}
 
     //TODO Write in file encrypted password and root.
+
+    public boolean isbClicked() {return bClicked;}
 
     public void setRoot(String root) {this.root = root;}
 }
