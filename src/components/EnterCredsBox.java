@@ -1,5 +1,6 @@
 package components;
 
+import main.DBManager;
 import main.WindowPanel;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ public class EnterCredsBox extends JFrame {
     components.Button b;
     String root;
     String encryptedPassword;
+    JFrame f = this;
 
     public EnterCredsBox(){
         this.setLayout(null);
@@ -55,6 +57,21 @@ public class EnterCredsBox extends JFrame {
                 setRoot(username.getText());
                 System.out.println("root: " + getRoot());
                 System.out.println("password: " + getPassword());
+                if(DBManager.tryConn(getRoot(), getPassword())){
+                    ErrorDialogBox d = new ErrorDialogBox("Connected sucessfully");
+                    d.setVisible(true);
+                }else{
+                    ErrorDialogBox e = new ErrorDialogBox("Cannot connect.");
+                    e.setVisible(true);
+                    try {
+                        e.wait(2500);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    e.dispose();
+                    username.setText("");
+                    password.setText("");
+                }
             }
         });
 
@@ -76,4 +93,9 @@ public class EnterCredsBox extends JFrame {
 
     public void setRoot(String root) {this.root = root;}
 
+
+    public static void main(String[] args) {
+        EnterCredsBox e = new EnterCredsBox();
+        e.setVisible(true);
+    }
 }
