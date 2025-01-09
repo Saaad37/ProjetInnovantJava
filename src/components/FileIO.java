@@ -8,12 +8,13 @@ public class FileIO {
     BufferedReader br;
     String username;
     String password;
+    File file;
     public FileIO(String filePath){
         try {
             br = new BufferedReader(new FileReader(filePath));
             System.out.println("File Exists.");
         } catch (FileNotFoundException e) {
-            File file = new File(filePath);
+            file = new File(filePath);
             try {
                 if(file.createNewFile()){
                     System.out.println("File Created " + file.getName());
@@ -42,6 +43,30 @@ public class FileIO {
                 throw new RuntimeException(e);
             }
         } while (true);
+    }
+
+    public void writeCreds(EnterCredsBox ecb){
+        String username = ecb.getRoot();
+        String passoword = ecb.getPassword();
+        writeRoot(username);
+        writePassword(passoword);
+
+    }
+
+    private void writeRoot(String username){
+        try(FileWriter w = new FileWriter(file.getName())){
+            w.write(username);
+        }catch (IOException e){
+            System.out.println("Cannot write in file");
+        }
+    }
+
+    private void writePassword(String password){
+        try(FileWriter w = new FileWriter(file.getName())){
+            w.write(password);
+        }catch (IOException e){
+            System.out.println("Cannot write in file.");
+        }
     }
 
     public static String getOS(){
