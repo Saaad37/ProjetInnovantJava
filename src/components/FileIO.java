@@ -72,4 +72,8 @@ public class FileIO {
     public static String getOS(){
         return System.getProperty("os.name");
     }
+    public File getFile() {return file;}
+    public static boolean isFileEmpty(File f){
+        return !f.exists() || f.length() == 0;
+    }
 }
