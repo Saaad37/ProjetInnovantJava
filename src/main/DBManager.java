@@ -167,7 +167,6 @@ public class DBManager {
             useButton = new Button(new Rectangle(290, 100, 80, 35), "Use", defaultButCol, onHoverCol);
             searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search", defaultButCol, onHoverCol);
 
-
             f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             f.addWindowListener(new WindowListener() {
                 @Override
