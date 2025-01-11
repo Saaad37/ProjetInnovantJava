@@ -13,12 +13,13 @@ public class Button extends JButton {
     private Color hoverColor;
     private Color colorClick;
     private Color borderColor;
-    private int radius = 0;
+    private int radius;
 
 
-    public Button(Rectangle bounds, String buttonName, Color defaultColor, Color hoverColor) {
+    public Button(Rectangle bounds, String buttonName, Color defaultColor, Color hoverColor, int radius) {
 
         // Init colors;
+        setRadius(radius);
         setDefaultColor(defaultColor);
         setHoverColor(hoverColor);
         setBackground(getDefaultColor());

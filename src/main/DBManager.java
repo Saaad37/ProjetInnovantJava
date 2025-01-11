@@ -17,11 +17,11 @@ import java.util.Random;
 import java.util.UUID;
 
 public class DBManager {
-    String username;
-    String password;
+    static final String username = "root";
     static final String tableName = "users";
     final Color defaultButCol = Color.WHITE;
     final Color onHoverCol = Color.LIGHT_GRAY;
+    final int buttonRadius=0;
     Connection con;
     WindowPanel wp;
     JTable table;
@@ -35,8 +35,10 @@ public class DBManager {
     components.Button updateButton;
     components.Button useButton;
     components.Button searchButton;
+    components.Button clearButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
+
 
 
     public DBManager(WindowPanel wp, String username, String password){
@@ -165,11 +167,13 @@ public class DBManager {
             JLabel lastNameTxt = new JLabel("Last name:");
             firstNameField = new JTextField();
             lastNameField = new JTextField();
-            addButton = new Button(new Rectangle(40, 100, 60, 35), "Add", defaultButCol, onHoverCol);
-            updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update", defaultButCol, onHoverCol);
-            delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete", defaultButCol, onHoverCol);
-            useButton = new Button(new Rectangle(290, 100, 80, 35), "Use", defaultButCol, onHoverCol);
-            searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search", defaultButCol, onHoverCol);
+            addButton = new Button(new Rectangle(40, 100, 60, 35), "Add", defaultButCol, onHoverCol, buttonRadius);
+            updateButton = new Button(new Rectangle(110, 100, 80, 35), "Update", defaultButCol, onHoverCol, buttonRadius);
+            delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete", defaultButCol, onHoverCol, buttonRadius);
+            useButton = new Button(new Rectangle(290, 100, 80, 35), "Use", defaultButCol, onHoverCol, buttonRadius);
+            searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search", defaultButCol, onHoverCol, buttonRadius);
+            clearButton = new Button(new Rectangle(365, 60, 70, 35), "Clear", defaultButCol, onHoverCol, buttonRadius);
+
 
             f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             f.addWindowListener(new WindowListener() {
@@ -478,11 +482,6 @@ public class DBManager {
 
     public boolean isProfilesOpen(){
         return isProfileOpened;
-    }
-
-    public void setLogin(String username, String password){
-        this.username = username;
-        this.password = password;
     }
 
     public void setProfileOpened(boolean profileOpened) {

@@ -35,7 +35,7 @@ public class EnterCredsBox extends JFrame {
         bClicked = false;
 
         b = new Button(new Rectangle(300, 320, 120, 50), "Enter", Color.WHITE
-                ,Color.LIGHT_GRAY);
+                ,Color.LIGHT_GRAY, 0);
 
         user.setImage(WindowPanel.resizeImage(user, 25, 25).getImage());
         JLabel userL = new JLabel(user);
