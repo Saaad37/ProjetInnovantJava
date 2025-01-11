@@ -19,7 +19,7 @@ public class Button extends JButton {
     public Button(Rectangle bounds, String buttonName, Color defaultColor, Color hoverColor, int radius) {
 
         // Init colors;
-        setRadius(radius);
+        this.radius = radius;
         setDefaultColor(defaultColor);
         setHoverColor(hoverColor);
         setBackground(getDefaultColor());
