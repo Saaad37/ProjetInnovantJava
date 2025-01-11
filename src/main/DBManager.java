@@ -55,6 +55,18 @@ public class DBManager {
         }
     }
 
+    public static boolean tryConn(String username, String password){
+        Connection con;
+        try{
+            con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username,
+                    password);
+            return true;
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public void fetchUsers(){
         initComponents();
         updateTable();

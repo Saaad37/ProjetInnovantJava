@@ -544,4 +544,6 @@ public class WindowPanel extends JPanel implements Runnable {
         return wp;
     }
 
+    public DBManager getDb() {return db;}
+
 }
