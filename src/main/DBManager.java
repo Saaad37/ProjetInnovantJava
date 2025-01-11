@@ -35,9 +35,10 @@ public class DBManager {
     components.Button updateButton;
     components.Button useButton;
     components.Button searchButton;
+    components.Button clearButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
-    KeyListener kl;
+
 
 
     public DBManager(WindowPanel wp){
@@ -155,6 +156,7 @@ public class DBManager {
             delButton = new Button(new Rectangle(200, 100, 80, 35), "Delete", defaultButCol, onHoverCol, buttonRadius);
             useButton = new Button(new Rectangle(290, 100, 80, 35), "Use", defaultButCol, onHoverCol, buttonRadius);
             searchButton = new Button(new Rectangle(380, 100, 80, 35), "Search", defaultButCol, onHoverCol, buttonRadius);
+            clearButton = new Button(new Rectangle(365, 60, 70, 35), "Clear", defaultButCol, onHoverCol, buttonRadius);
 
 
             f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -284,11 +286,22 @@ public class DBManager {
                                 System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
                                 int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
 
+                                idsComboBox.setSelectedItem(String.valueOf(uuid));
                                 firstNameField.setText(getProfile(uuid).get(0));
                                 lastNameField.setText(getProfile(uuid).get(1));
                         }
 
                     }
+                }
+            });
+
+            clearButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    firstNameField.setText("");
+                    lastNameField.setText("");
+                    idsComboBox.setSelectedIndex(0);
+                    updateTable();
                 }
             });
 
@@ -340,6 +353,7 @@ public class DBManager {
             f.add(delButton);
             f.add(useButton);
             f.add(searchButton);
+            f.add(clearButton);
 
             f.pack();
     }
@@ -366,26 +380,6 @@ public class DBManager {
             idsComboBox.addItem(ids.get(i).toString());
         }
 
-    }
-
-    public void unselectRow(){
-        kl = new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                int code = e.getKeyCode();
-                if(code == KeyEvent.VK_ESCAPE || table.getSelectedRow() < 0){
-                    table.setSelectionModel(null);
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-            }
-        };
     }
     
     public ArrayList<String> getProfile(int uuid){
