@@ -209,10 +209,10 @@ public class WindowPanel extends JPanel implements Runnable {
                 }else if((!paused && !stopped)){
                     maxDepthTest.add(savedValues.getLast()[0]);
                     setMaxDepth();
-                    System.out.println(maxDepth + " " + maxValN2);
+                    System.out.println("Profondeur maximale: " + maxDepth + " PaN2 maximal: " + maxValN2);
                     stopThread();
                     resetValues();
-                    System.out.println(maxDepthTest.toString());
+                    System.out.println("Les valeurs des tests precedents:\n" + maxDepthTest.toString());
                 }else{
                     ErrorDialogBox e = new ErrorDialogBox("Nothing to save start a new session..");
                     e.setVisible(true);
@@ -487,7 +487,7 @@ public class WindowPanel extends JPanel implements Runnable {
     public void setTestingState(){
         if(testing && profileSelected){
             testingButton.setText("Stop Testing");
-            setBackground(Color.RED);
+            setBackground(new Color(163, 27, 66));
         }else if (!testing && profileSelected){
             testingButton.setText("Start Testing");
             setBackground(bgColor);
