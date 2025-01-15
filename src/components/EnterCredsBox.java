@@ -63,9 +63,6 @@ public class EnterCredsBox extends JFrame {
                 bClicked = true;
                 setRoot(username.getText());
                 if(DBManager.tryConn(getRoot(), getPassword())){
-                    ErrorDialogBox d = new ErrorDialogBox("Connected sucessfully");
-                    d.setVisible(true);
-                    d.dispose();
                     Main.wp.runDB(getRoot(), getPassword());
                     Main.startProg();
                     f.dispose();
