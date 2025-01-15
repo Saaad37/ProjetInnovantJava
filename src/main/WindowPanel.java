@@ -140,7 +140,6 @@ public class WindowPanel extends JPanel implements Runnable {
                     ErrorDialogBox e1 = new ErrorDialogBox("Select a profile.");
                     e1.setVisible(true);
                 }
-                System.out.println(paused + " " + stopped );
             }
         });
 
@@ -167,7 +166,6 @@ public class WindowPanel extends JPanel implements Runnable {
                     ErrorDialogBox er = new ErrorDialogBox("Select a user please.");
                     er.setVisible(true);
                 }
-                System.out.println(paused + " " + stopped );
             }
         });
 
@@ -181,7 +179,6 @@ public class WindowPanel extends JPanel implements Runnable {
                     ErrorDialogBox err = new ErrorDialogBox("Select a user please.");
                     err.setVisible(true);
                 }
-                System.out.println(paused + " " + stopped );
             }
         });
 
@@ -198,7 +195,6 @@ public class WindowPanel extends JPanel implements Runnable {
                     testing = true;
                 }else if(testing && stopped && !maxDepthTest.isEmpty()){
                     StopTestingDialog d = new StopTestingDialog("Do you want to lose your progression ?", wp);
-                    System.out.println(testing);
                     d.setVisible(true);
                 }
                 setTestingState();
@@ -331,7 +327,6 @@ public class WindowPanel extends JPanel implements Runnable {
         displayTimer();
         paused = false;
         stopped = true;
-        System.out.println(savedValues.toString());
     }
 
     private void assignValues() {
@@ -424,7 +419,6 @@ public class WindowPanel extends JPanel implements Runnable {
                  */
                 displayValues(); // Afficher les valeurs
                 saveValues(); // Sauvegarder les valeurs dans la liste des valeurs sauvegardées
-                System.out.println(testing);
                 timerIterations++; // Incrémente un a combien de secondes sont passer depuis le debut du programme.
                 if (timerIterations % 60 == 0) {
                     minPassed++;
