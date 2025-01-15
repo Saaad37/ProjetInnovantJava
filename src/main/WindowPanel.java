@@ -102,6 +102,7 @@ public class WindowPanel extends JPanel implements Runnable {
     JLabel subroticLogo = new JLabel();
     JLabel diverPhoto = new JLabel();
     JLabel timerTxt = new JLabel();
+    JLabel welcomeL = new JLabel();
 
     String N2Warning;
     String depthWarning;
@@ -127,6 +128,7 @@ public class WindowPanel extends JPanel implements Runnable {
         testing = false;
         paused = false;
         stopped = true;
+
 
 
         startButton.addActionListener(new ActionListener() {
@@ -246,8 +248,10 @@ public class WindowPanel extends JPanel implements Runnable {
         depthTxt.setFont(font);
         savedText.setFont(font);
         timerTxt.setFont(font);
+        welcomeL.setFont(font);
         subroticLogo.setIcon(subroticIcon);
         diverPhoto.setIcon(diverIcon);
+
 
 
         pressureTxt.setForeground(defaultColor);
@@ -256,6 +260,7 @@ public class WindowPanel extends JPanel implements Runnable {
         depthTxt.setForeground(defaultColor);
         timerTxt.setForeground(defaultColor);
         savedText.setForeground(defaultColor);
+        welcomeL.setForeground(defaultColor);
 
         // Donner un rectangle comme limite de textes
         subroticLogo.setBounds(new Rectangle(20, 20, 125, 125));
@@ -266,6 +271,7 @@ public class WindowPanel extends JPanel implements Runnable {
         pressureTxt.setBounds(new Rectangle(50, 300, 720, 50));
         savedText.setBounds(new Rectangle(10, 425, 720, 50));
         timerTxt.setBounds(new Rectangle(600, 550, 100, 50));
+        welcomeL.setBounds(new Rectangle(250, 20, 720, 50));
 
         subroticIcon.setImage(
                 resizeImage(subroticIcon, subroticLogo.getBounds().width,
@@ -290,6 +296,7 @@ public class WindowPanel extends JPanel implements Runnable {
         this.add(depthTxt);
         this.add(savedText);
         this.add(timerTxt);
+        this.add(welcomeL);
         //Buttons
         this.add(startButton);
         this.add(pauseButton);
