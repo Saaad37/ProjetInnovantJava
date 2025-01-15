@@ -87,7 +87,7 @@ public class WindowPanel extends JPanel implements Runnable {
     int timerIterations; // Création d'une variable qui va s'incrementer de un chaque seconde et sera
     int minPassed;
     // l'index des valeurs sauvegardé
-    ImageIcon subroticIcon = new ImageIcon(this.getClass().getResource("/assets/subrotic.jpg"));
+    ImageIcon subroticIcon = new ImageIcon(this.getClass().getResource("/assets/subrotic.png"));
     ImageIcon diverIcon = new ImageIcon(this.getClass().getResource("/assets/diver.png"));
 
     /*
