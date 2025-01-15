@@ -294,6 +294,16 @@ public class DBManager {
                 }
             });
 
+            clearButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    firstNameField.setText("");
+                    lastNameField.setText("");
+                    idsComboBox.setSelectedIndex(0);
+                    updateTable();
+                }
+            });
+
             table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
                     if(!e.getValueIsAdjusting()){
@@ -301,7 +311,7 @@ public class DBManager {
                             if(r >= 0){
                                 System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
                                 int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
-
+                                idsComboBox.setSelectedItem(String.valueOf(uuid));
                                 firstNameField.setText(getProfile(uuid).get(0));
                                 lastNameField.setText(getProfile(uuid).get(1));
                         }
@@ -358,6 +368,7 @@ public class DBManager {
             f.add(delButton);
             f.add(useButton);
             f.add(searchButton);
+            f.add(clearButton);
 
             f.pack();
     }
