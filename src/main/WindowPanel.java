@@ -10,6 +10,8 @@ import components.StopTestingDialog;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -128,7 +130,6 @@ public class WindowPanel extends JPanel implements Runnable {
         testing = false;
         paused = false;
         stopped = true;
-
 
 
         startButton.addActionListener(new ActionListener() {
@@ -271,7 +272,8 @@ public class WindowPanel extends JPanel implements Runnable {
         pressureTxt.setBounds(new Rectangle(50, 300, 720, 50));
         savedText.setBounds(new Rectangle(10, 425, 720, 50));
         timerTxt.setBounds(new Rectangle(600, 550, 100, 50));
-        welcomeL.setBounds(new Rectangle(250, 20, 720, 50));
+
+
 
         subroticIcon.setImage(
                 resizeImage(subroticIcon, subroticLogo.getBounds().width,
