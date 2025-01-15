@@ -1,6 +1,7 @@
 package components;
 
 import main.DBManager;
+import main.Main;
 import main.WindowPanel;
 
 import javax.swing.*;
@@ -21,9 +22,10 @@ public class EnterCredsBox extends JFrame {
     String encryptedPassword;
     JFrame f = this;
     boolean bClicked;
-    EnterCredsBox ecb = this;
+    DBManager db;
 
-    public EnterCredsBox(FileIO fileIO){
+    public EnterCredsBox(){
+        this.db = Main.wp.getDb();
         this.setLayout(null);
         this.setPreferredSize(new Dimension(720, 420));
         this.setLocationRelativeTo(null);
@@ -65,8 +67,9 @@ public class EnterCredsBox extends JFrame {
                 if(DBManager.tryConn(getRoot(), getPassword())){
                     ErrorDialogBox d = new ErrorDialogBox("Connected sucessfully");
                     d.setVisible(true);
-                    fileIO.writeCreds(ecb);
                     d.dispose();
+                    Main.wp.runDB(getRoot(), getPassword());
+                    Main.startProg();
                     f.dispose();
                 }else{
                     ErrorDialogBox e = new ErrorDialogBox("Cannot connect.");

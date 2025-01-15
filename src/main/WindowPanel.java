@@ -117,10 +117,11 @@ public class WindowPanel extends JPanel implements Runnable {
     WindowPanel wp = this;
     DBManager db;
 
+    public void runDB(String username, String password){
+        this.db = new DBManager(wp, username, password);
+    }
+
     public WindowPanel() { // Constructeur.
-
-        db = new DBManager(wp);
-
 
         testing = false;
         paused = false;

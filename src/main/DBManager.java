@@ -17,7 +17,8 @@ import java.util.Random;
 import java.util.UUID;
 
 public class DBManager {
-    static final String username = "root";
+    String username;
+    String password;
     static final String tableName = "users";
     final Color defaultButCol = Color.WHITE;
     final Color onHoverCol = Color.LIGHT_GRAY;
@@ -36,14 +37,17 @@ public class DBManager {
     components.Button searchButton;
     JComboBox<String> idsComboBox;
     boolean isProfileOpened;
-    KeyListener kl;
 
 
-    public DBManager(WindowPanel wp){
+    public DBManager(WindowPanel wp, String username, String password){
         this.wp = wp;
         totalData = new ArrayList<>();
+        runCon(username, password);
+    }
+
+    public void runCon(String username, String password){
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, Creds.password);
+            con = DriverManager.getConnection("jdbc:mysql://localhost/SurveillanceSystem", username, password);
             con.setAutoCommit(false);
             System.out.println("Connection Established successfully !");
             fetchUsers();
@@ -377,26 +381,6 @@ public class DBManager {
         }
 
     }
-
-    public void unselectRow(){
-        kl = new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                int code = e.getKeyCode();
-                if(code == KeyEvent.VK_ESCAPE || table.getSelectedRow() < 0){
-                    table.setSelectionModel(null);
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent keyEvent) {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent keyEvent) {
-            }
-        };
-    }
     
     public ArrayList<String> getProfile(int uuid){
         try {
@@ -494,6 +478,11 @@ public class DBManager {
 
     public boolean isProfilesOpen(){
         return isProfileOpened;
+    }
+
+    public void setLogin(String username, String password){
+        this.username = username;
+        this.password = password;
     }
 
     public void setProfileOpened(boolean profileOpened) {
