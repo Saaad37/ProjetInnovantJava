@@ -62,8 +62,6 @@ public class EnterCredsBox extends JFrame {
             public void actionPerformed(ActionEvent actionEvent) {
                 bClicked = true;
                 setRoot(username.getText());
-                System.out.println("root: " + getRoot());
-                System.out.println("password: " + getPassword());
                 if(DBManager.tryConn(getRoot(), getPassword())){
                     ErrorDialogBox d = new ErrorDialogBox("Connected sucessfully");
                     d.setVisible(true);

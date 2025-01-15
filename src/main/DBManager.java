@@ -53,7 +53,6 @@ public class DBManager {
             con.setAutoCommit(false);
             System.out.println("Connection Established successfully !");
             fetchUsers();
-            printAllUsers();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -197,7 +196,6 @@ public class DBManager {
             });
             f.setPreferredSize(new Dimension(500, 480));
             f.setAlwaysOnTop(true);
-            System.out.println(isProfileOpened);
 
 
             idsComboBox.setBounds(new Rectangle(350, 20, 100, 35));
@@ -256,7 +254,6 @@ public class DBManager {
                 public void actionPerformed(ActionEvent actionEvent) {
                         int uuid = getUserId();
                         if(uuid == 0 ) return;
-                        System.out.println(uuid);
                         String firstName = firstNameField.getText();
                         String lastName = lastNameField.getText();
                         updateUser(uuid, firstName, lastName);
@@ -309,7 +306,6 @@ public class DBManager {
                     if(!e.getValueIsAdjusting()){
                         int r = table.getSelectedRow();
                             if(r >= 0){
-                                System.out.println(Integer.parseInt(table.getValueAt(r, 0).toString()));
                                 int uuid = Integer.parseInt(table.getValueAt(r, 0).toString());
                                 idsComboBox.setSelectedItem(String.valueOf(uuid));
                                 firstNameField.setText(getProfile(uuid).get(0));
@@ -388,7 +384,6 @@ public class DBManager {
 
     public void loadIds(){
         ArrayList<Integer> ids = getAllids();
-        System.out.println(ids.toString());
         idsComboBox.removeAllItems();
         idsComboBox.addItem("id");
         for(int i = 0; i < ids.size();i++){
@@ -446,23 +441,6 @@ public class DBManager {
             }
             stmt.close();
             return ids;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void printAllUsers(){
-        try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName + " ORDER BY last_name ASC");
-            System.out.println("+----------------------+------------------------------+--------------------\n");
-            while(rs.next()){
-                System.out.println("        | uuid | " + rs.getInt("uuid"));
-                System.out.println("        | first_name | " +  rs.getString("first_name"));
-                System.out.println("        | last_name | " + rs.getString("last_name") );
-            }
-            System.out.println("+------------------------+------------------------+--------------------------\n");
-            stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
