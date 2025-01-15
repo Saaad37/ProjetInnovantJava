@@ -10,6 +10,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class DBManager {
     final int buttonRadius=0;
     Connection con;
     WindowPanel wp;
+    Font font;
     JTable table;
     JTextField firstNameField;
     JTextField lastNameField;
@@ -43,6 +46,7 @@ public class DBManager {
 
     public DBManager(WindowPanel wp, String username, String password){
         this.wp = wp;
+        font = wp.getFont();
         totalData = new ArrayList<>();
         runCon(username, password);
     }
@@ -288,7 +292,11 @@ public class DBManager {
                     System.out.println(getMaxDepth() + " " + getMaxValN2());
                     isProfileOpened = false;
                     f.dispose();
-                    wp.welcomeL.setText("Welcome " + getProfile(uuid).getFirst() + " " +  getProfile(uuid).get(1) + ".");
+                    String welcomeTxt = "Welcome " + getProfile(uuid).getFirst() + " " +  getProfile(uuid).get(1) + ".";
+                    int welcomeWidth = (int) font.getStringBounds(welcomeTxt, new FontRenderContext(new AffineTransform(),
+                            true, true)).getWidth();
+                    wp.welcomeL.setBounds(new Rectangle(((wp.getWidth() - welcomeWidth) / 2) - 50, 20, 720, 50));
+                    wp.welcomeL.setText(welcomeTxt);
                 }
             });
 
