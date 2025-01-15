@@ -288,6 +288,7 @@ public class DBManager {
                     System.out.println(getMaxDepth() + " " + getMaxValN2());
                     isProfileOpened = false;
                     f.dispose();
+                    wp.welcomeL.setText("Welcome " + getProfile(uuid).getFirst() + " " +  getProfile(uuid).get(1) + ".");
                 }
             });
 
