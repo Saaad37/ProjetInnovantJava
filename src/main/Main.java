@@ -9,8 +9,8 @@ public class Main {
     public static WindowPanel wp = new WindowPanel();
 
     public static void main(String[] args) {
-        EnterCredsBox ecb = new EnterCredsBox();
-        ecb.setVisible(true);
+        wp.runDB("root", Creds.password);
+        startProg();
     }
 
     public static void startProg(){
